@@ -7,7 +7,7 @@ This driver adds support for the WS2814f LED strip controller chip to HyperHDR v
 Based on the official datasheet:
 
 - **T0H** (0 code, high level time): 220ns ~ 380ns
-- **T0L** (0 code, low level time): 580ns ~ 1µs  
+- **T0L** (0 code, low level time): 580ns ~ 1µs
 - **T1H** (1 code, high level time): 580ns ~ 1µs
 - **T1L** (1 code, low level time): 220ns ~ 380ns
 - **RES** (Reset code, low level time): 280µs or more

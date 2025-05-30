@@ -10,7 +10,7 @@ struct ws2811_t;
 ///
 /// WS2814f timing requirements:
 /// - T0H: 220-380ns (0 code high time)
-/// - T0L: 580ns-1µs (0 code low time)  
+/// - T0L: 580ns-1µs (0 code low time)
 /// - T1H: 580ns-1µs (1 code high time)
 /// - T1L: 220-380ns (1 code low time)
 /// - RES: 280µs+ (reset low time)

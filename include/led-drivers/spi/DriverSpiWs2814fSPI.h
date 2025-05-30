@@ -33,17 +33,9 @@ public:
 	///
 	/// @brief Writes the RGB-Color values to the LEDs.
 	///
-	/// @param[in] ledValues The RGB-color per LED
-	/// @return Zero on success, else negative
+	/// @param[in] ledValues The RGB-color per LED	/// @return Zero on success, else negative
 	///
 	int write(const std::vector<ColorRgb>& ledValues) override;
-
-	///
-	/// @brief Get the SPI device's resource properties
-	///
-	/// @param[in] params Parameters used to overwrite discovery default settings
-	/// @return JSON-Object holding the device's properties
-	static QJsonObject discover(const QJsonObject& params);
 
 	static bool isRegistered;
 

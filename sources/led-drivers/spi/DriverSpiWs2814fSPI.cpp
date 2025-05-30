@@ -22,7 +22,7 @@ T1 is sent as 1110 (900ns high, 300ns low)
 
 With timing optimization:
 2800000 MIN
-3333333 AVG  
+3333333 AVG
 4000000 MAX
 
 Reset time:
@@ -106,22 +106,6 @@ int DriverSpiWs2814fSPI::write(const std::vector<ColorRgb>& ledValues)
 	return writeBytes(_ledBuffer.size(), _ledBuffer.data());
 }
 
-QJsonObject DriverSpiWs2814fSPI::discover(const QJsonObject& /*params*/)
-{
-	QJsonObject devicesDiscovered;
-	devicesDiscovered.insert("ledDeviceType", _activeDeviceType);
 
-	QJsonArray deviceList;
-
-	QJsonObject deviceInfo;
-	deviceInfo.insert("deviceName", QString("SPI"));
-	deviceInfo.insert("systemLocation", QString("/dev/spidev0.0"));
-
-	deviceList.append(deviceInfo);
-
-	devicesDiscovered.insert("devices", deviceList);
-
-	return devicesDiscovered;
-}
 
 bool DriverSpiWs2814fSPI::isRegistered = hyperhdr::leds::REGISTER_LED_DEVICE("ws2814fspi", "leds_group_0_SPI", DriverSpiWs2814fSPI::construct);

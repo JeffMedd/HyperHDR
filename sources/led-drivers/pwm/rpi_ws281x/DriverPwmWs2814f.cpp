@@ -49,14 +49,14 @@ bool DriverPwmWs2814f::init(const QJsonObject& deviceConfig)
 			{
 				// Clear the ws2811_t structure
 				memset(_ledString.get(), 0, sizeof(ws2811_t));
-				
+
 				// WS2814f configuration
 				_ledString->freq = deviceConfig["freq"].toInt(800000UL);  // 800kHz default for WS2814f
 				_ledString->dmanum = deviceConfig["dma"].toInt(5);
 				_ledString->channel[_channel].gpionum = deviceConfig["gpio"].toInt(18);
 				_ledString->channel[_channel].count = deviceConfig["leds"].toInt(256);
 				_ledString->channel[_channel].invert = deviceConfig["invert"].toInt(0);
-				
+
 				// WS2814f uses GRB color order - critical for proper operation
 				_ledString->channel[_channel].strip_type = WS2811_STRIP_GRB;
 				_ledString->channel[_channel].brightness = 255;
