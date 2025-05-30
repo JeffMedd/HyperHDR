@@ -158,7 +158,7 @@ jobs:
       - name: Deploy the packages
         uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
-          repository-name: awawa-dev/awawa-dev.github.io
+          repository-name: JeffMedd/awawa-dev.github.io
           branch: upload
           folder: repo
           target-folder: repo
