@@ -41,6 +41,9 @@ DriverSpiWs2814fSPI::DriverSpiWs2814fSPI(const QJsonObject& deviceConfig)
 		0b11101000,
 		0b11101110,
 }
+	, _whiteAlgorithm(RGBW::stringToWhiteAlgorithm("white_off"))
+	, _useRgbw(false)
+	, _swapWG(false)
 {
 }
 
@@ -59,9 +62,22 @@ bool DriverSpiWs2814fSPI::init(const QJsonObject& deviceConfig)
 	// Initialise sub-class
 	if (ProviderSpi::init(deviceConfig))
 	{
+		// Get RGBW configuration
+		_useRgbw = deviceConfig["rgbw"].toBool(false);
+		_swapWG = deviceConfig["swapWG"].toBool(false);
+
+		QString whiteAlgorithm = deviceConfig["whiteAlgorithm"].toString("white_off");
+		_whiteAlgorithm = RGBW::stringToWhiteAlgorithm(whiteAlgorithm);
+
 		WarningIf((_baudRate_Hz < 2800000 || _baudRate_Hz > 4000000), _log, "SPI rate %d outside recommended range (2800000 -> 4000000)", _baudRate_Hz);
 
-		_ledBuffer.resize(_ledRGBCount * SPI_BYTES_PER_COLOUR + SPI_FRAME_END_LATCH_BYTES, 0x00);
+		// For RGBW mode, we need to allocate space for 4 channels instead of 3
+		int bytesPerLed = _useRgbw ? 4 * SPI_BYTES_PER_COLOUR : 3 * SPI_BYTES_PER_COLOUR;
+		_ledBuffer.resize(_ledCount * bytesPerLed + SPI_FRAME_END_LATCH_BYTES, 0x00);
+
+		Debug(_log, "WS2814f SPI RGBW mode     : %s", _useRgbw ? "enabled" : "disabled");
+		Debug(_log, "WS2814f SPI swap W & G    : %s", _swapWG ? "enabled" : "disabled");
+		Debug(_log, "WS2814f SPI white algorithm: %s", whiteAlgorithm.toStdString().c_str());
 
 		isInitOK = true;
 	}
@@ -72,7 +88,7 @@ bool DriverSpiWs2814fSPI::init(const QJsonObject& deviceConfig)
 int DriverSpiWs2814fSPI::write(const std::vector<ColorRgb>& ledValues)
 {
 	unsigned spi_ptr = 0;
-	const int SPI_BYTES_PER_LED = sizeof(ColorRgb) * SPI_BYTES_PER_COLOUR;
+	const int SPI_BYTES_PER_LED = _useRgbw ? 4 * SPI_BYTES_PER_COLOUR : 3 * SPI_BYTES_PER_COLOUR;
 
 	if (_ledCount != ledValues.size())
 	{
@@ -80,15 +96,42 @@ int DriverSpiWs2814fSPI::write(const std::vector<ColorRgb>& ledValues)
 		_ledCount = ledValues.size();
 
 		_ledBuffer.resize(0, 0x00);
-		_ledBuffer.resize(_ledRGBCount * SPI_BYTES_PER_COLOUR + SPI_FRAME_END_LATCH_BYTES, 0x00);
+		_ledBuffer.resize(_ledCount * SPI_BYTES_PER_LED + SPI_FRAME_END_LATCH_BYTES, 0x00);
 	}
 
 	for (const ColorRgb& color : ledValues)
 	{
-		// WS2814f uses GRB color order
-		uint32_t colorBits = ((unsigned int)color.green << 16)
-			| ((unsigned int)color.red << 8)
-			| color.blue;
+		_temp_rgbw.red = color.red;
+		_temp_rgbw.green = color.green;
+		_temp_rgbw.blue = color.blue;
+		_temp_rgbw.white = 0;
+
+		uint32_t colorBits;
+
+		if (_useRgbw)
+		{
+			// Apply white algorithm for RGBW processing
+			RGBW::Rgb_to_Rgbw(color, &_temp_rgbw, _whiteAlgorithm);
+
+			// Apply W & G swap if enabled (WLED compatibility feature)
+			if (_swapWG)
+			{
+				std::swap(_temp_rgbw.white, _temp_rgbw.green);
+			}
+
+			// WS2814f RGBW uses BRGW color order (Blue-Red-Green-White)
+			colorBits = ((unsigned int)_temp_rgbw.blue << 24)
+				| ((unsigned int)_temp_rgbw.red << 16)
+				| ((unsigned int)_temp_rgbw.green << 8)
+				| _temp_rgbw.white;
+		}
+		else
+		{
+			// WS2814f RGB uses GRB color order
+			colorBits = ((unsigned int)_temp_rgbw.green << 16)
+				| ((unsigned int)_temp_rgbw.red << 8)
+				| _temp_rgbw.blue;
+		}
 
 		for (int j = SPI_BYTES_PER_LED - 1; j >= 0; j--)
 		{

@@ -7,6 +7,8 @@ DriverPwmWs2814f::DriverPwmWs2814f(const QJsonObject& deviceConfig)
 	_ledString = nullptr;
 	_channel = 0;
 	_whiteAlgorithm = RGBW::stringToWhiteAlgorithm("white_off");
+	_useRgbw = false;
+	_swapWG = false;
 }
 
 DriverPwmWs2814f::~DriverPwmWs2814f()
@@ -29,6 +31,10 @@ bool DriverPwmWs2814f::init(const QJsonObject& deviceConfig)
 	// Initialise sub-class
 	if (LedDevice::init(deviceConfig))
 	{
+		// Get RGBW configuration
+		_useRgbw = deviceConfig["rgbw"].toBool(false);
+		_swapWG = deviceConfig["swapWG"].toBool(false);
+
 		QString whiteAlgorithm = deviceConfig["whiteAlgorithm"].toString("white_off");
 
 		_whiteAlgorithm = RGBW::stringToWhiteAlgorithm(whiteAlgorithm);
@@ -57,8 +63,16 @@ bool DriverPwmWs2814f::init(const QJsonObject& deviceConfig)
 				_ledString->channel[_channel].count = deviceConfig["leds"].toInt(256);
 				_ledString->channel[_channel].invert = deviceConfig["invert"].toInt(0);
 
-				// WS2814f uses GRB color order - critical for proper operation
-				_ledString->channel[_channel].strip_type = WS2811_STRIP_GRB;
+				// WS2814f configuration based on RGBW mode
+				// For WS2814f: use BRG color order with White channel when RGBW is enabled
+				if (_useRgbw)
+				{
+					_ledString->channel[_channel].strip_type = SK6812_STRIP_BRGW;  // BRG + White for WS2814f RGBW
+				}
+				else
+				{
+					_ledString->channel[_channel].strip_type = WS2811_STRIP_GRB;   // Standard GRB for RGB mode
+				}
 				_ledString->channel[_channel].brightness = 255;
 
 				// Configure unused channel
@@ -81,7 +95,9 @@ bool DriverPwmWs2814f::init(const QJsonObject& deviceConfig)
 				Debug(_log, "WS2814f selected frequency : %d Hz", _ledString->freq);
 				Debug(_log, "WS2814f selected gpio      : %d", _ledString->channel[_channel].gpionum);
 				Debug(_log, "WS2814f total channels     : %d", RPI_PWM_CHANNELS);
-				Debug(_log, "WS2814f strip type (GRB)   : 0x%08X", _ledString->channel[_channel].strip_type);
+				Debug(_log, "WS2814f RGBW mode          : %s", _useRgbw ? "enabled" : "disabled");
+				Debug(_log, "WS2814f swap W & G         : %s", _swapWG ? "enabled" : "disabled");
+				Debug(_log, "WS2814f strip type         : 0x%08X", _ledString->channel[_channel].strip_type);
 
 				if (_defaultInterval > 0)
 					Warning(_log, "The refresh timer is enabled ('Refresh time' > 0) and may limit the performance of the LED driver. Ignore this error if you set it on purpose for some reason (but you almost never need it).");
@@ -145,7 +161,7 @@ int DriverPwmWs2814f::write(const std::vector<ColorRgb>& ledValues)
 {
 	int idx = 0;
 
-	// Write LED values using GRB color order (WS2814f requirement)
+	// Write LED values with RGBW support
 	for (const ColorRgb& color : ledValues)
 	{
 		if (idx >= _ledString->channel[_channel].count)
@@ -158,10 +174,36 @@ int DriverPwmWs2814f::write(const std::vector<ColorRgb>& ledValues)
 		_temp_rgbw.blue = color.blue;
 		_temp_rgbw.white = 0;
 
-		// WS2814f uses GRB color order - pack as 32-bit value
-		// Format: 0x00RRGGBB but arranged for GRB strip type
-		_ledString->channel[_channel].leds[idx++] =
-			((uint32_t)_temp_rgbw.red << 16) + ((uint32_t)_temp_rgbw.green << 8) + _temp_rgbw.blue;
+		uint32_t ledValue;
+
+		if (_useRgbw)
+		{
+			// Apply white algorithm for RGBW processing
+			RGBW::Rgb_to_Rgbw(color, &_temp_rgbw, _whiteAlgorithm);
+
+			// Apply W & G swap if enabled (WLED compatibility feature)
+			if (_swapWG)
+			{
+				std::swap(_temp_rgbw.white, _temp_rgbw.green);
+			}
+
+			// Pack as BRGW (Blue-Red-Green-White) for WS2814f RGBW mode
+			// Using SK6812_STRIP_BRGW format: 0xWWRRGGBB
+			ledValue = ((uint32_t)_temp_rgbw.white << 24) +
+					   ((uint32_t)_temp_rgbw.red << 16) +
+					   ((uint32_t)_temp_rgbw.green << 8) +
+					   _temp_rgbw.blue;
+		}
+		else
+		{
+			// Standard RGB mode using GRB color order
+			// Format: 0x00RRGGBB but arranged for GRB strip type
+			ledValue = ((uint32_t)_temp_rgbw.red << 16) +
+					   ((uint32_t)_temp_rgbw.green << 8) +
+					   _temp_rgbw.blue;
+		}
+
+		_ledString->channel[_channel].leds[idx++] = ledValue;
 	}
 
 	// Clear remaining LEDs

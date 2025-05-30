@@ -44,4 +44,9 @@ private:
 	const int			SPI_BYTES_PER_COLOUR;
 	const int			SPI_FRAME_END_LATCH_BYTES;
 	const unsigned int	bitpair_to_byte[4];
+
+	RGBW::WhiteAlgorithm _whiteAlgorithm;
+	ColorRgbw _temp_rgbw;
+	bool _useRgbw;
+	bool _swapWG;
 };

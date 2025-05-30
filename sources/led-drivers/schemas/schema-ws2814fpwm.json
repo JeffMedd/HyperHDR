@@ -20,6 +20,17 @@
             "access": "system",
             "propertyOrder": 2
         },
+        "colorOrder": {
+            "type": "string",
+            "title": "edt_dev_general_colorOrder_title",
+            "enum": ["rgb", "bgr", "rbg", "brg", "gbr", "grb"],
+            "default": "grb",
+            "options": {
+                "enum_titles": ["edt_conf_enum_rgb", "edt_conf_enum_bgr", "edt_conf_enum_rbg", "edt_conf_enum_brg", "edt_conf_enum_gbr", "edt_conf_enum_grb"]
+            },
+            "access": "system",
+            "propertyOrder": 3
+        },
         "pwmchannel": {
             "type": "integer",
             "title": "edt_dev_spec_pwmchannel_title",
@@ -27,7 +38,7 @@
             "minimum": 0,
             "maximum": 1,
             "access": "system",
-            "propertyOrder": 3
+            "propertyOrder": 4
         },
         "dma": {
             "type": "integer",
@@ -36,7 +47,7 @@
             "minimum": 0,
             "maximum": 14,
             "access": "expert",
-            "propertyOrder": 4
+            "propertyOrder": 5
         },
         "freq": {
             "type": "integer",
@@ -46,23 +57,49 @@
             "maximum": 1000000,
             "access": "expert",
             "append": "edt_append_hz",
-            "propertyOrder": 5
+            "propertyOrder": 6
         },
         "invert": {
-            "type": "integer",
+            "type": "boolean",
+            "format": "checkbox",
             "title": "edt_dev_spec_invert_title",
-            "enum": [0, 1],
-            "default": 0,
+            "default": false,
             "access": "expert",
-            "propertyOrder": 6
+            "propertyOrder": 7
+        },
+        "rgbw": {
+            "type": "boolean",
+            "format": "checkbox",
+            "title": "edt_dev_spec_useRgbwProtocol_title",
+            "default": false,
+            "access": "system",
+            "propertyOrder": 8
+        },
+        "swapWG": {
+            "type": "boolean",
+            "format": "checkbox",
+            "title": "edt_dev_spec_swapWG_title",
+            "default": false,
+            "access": "system",
+            "propertyOrder": 9,
+            "options": {
+                "dependencies": {
+                    "rgbw": true
+                }
+            }
         },
         "whiteAlgorithm": {
             "type": "string",
             "title": "edt_dev_spec_whiteAlgorithm_title",
-            "enum": ["white_off"],
+            "enum": ["white_off", "subtract_minimum", "sub_min_cool_adjust", "sub_min_warm_adjust", "white_from_blue"],
             "default": "white_off",
             "access": "expert",
-            "propertyOrder": 7
+            "propertyOrder": 10,
+            "options": {
+                "dependencies": {
+                    "rgbw": true
+                }
+            }
         },
         "rewriteTime": {
             "type": "integer",
@@ -72,7 +109,7 @@
             "maximum": 30000,
             "append": "edt_append_ms",
             "access": "expert",
-            "propertyOrder": 8
+            "propertyOrder": 11
         }
     },
     "additionalProperties": false

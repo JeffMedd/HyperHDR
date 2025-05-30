@@ -520,6 +520,7 @@
   "edt_dev_spec_useEntertainmentAPIV2_title": "Utiliser Hue Entertainment API V2 (ajoute la prise en charge des bandes lumineuses à dégradé de teinte)",
   "edt_dev_spec_useOrbSmoothing_title": "Utiliser le lissage d'orbe",
   "edt_dev_spec_useRgbwProtocol_title": "Utiliser le protocole RGBW",
+  "edt_dev_spec_swapWG_title": "Échanger W et G",
   "edt_dev_spec_username_title": "Nom d'utilisateur",
   "edt_dev_spec_verbose_title": "Enregistrer toutes les commandes Hue",
   "edt_dev_spec_vid_title": "VID",

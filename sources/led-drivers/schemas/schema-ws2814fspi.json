@@ -19,12 +19,53 @@
 			"maximum": 4000000,
 			"propertyOrder" : 2
 		},
+		"colorOrder": {
+			"type": "string",
+			"title": "edt_dev_general_colorOrder_title",
+			"enum": ["rgb", "bgr", "rbg", "brg", "gbr", "grb"],
+			"default": "grb",
+			"options": {
+				"enum_titles": ["edt_conf_enum_rgb", "edt_conf_enum_bgr", "edt_conf_enum_rbg", "edt_conf_enum_brg", "edt_conf_enum_gbr", "edt_conf_enum_grb"]
+			},
+			"propertyOrder": 3
+		},
+		"rgbw": {
+			"type": "boolean",
+			"format": "checkbox",
+			"title": "edt_dev_spec_useRgbwProtocol_title",
+			"default": false,
+			"propertyOrder": 4
+		},
+		"swapWG": {
+			"type": "boolean",
+			"format": "checkbox",
+			"title": "edt_dev_spec_swapWG_title",
+			"default": false,
+			"propertyOrder": 5,
+			"options": {
+				"dependencies": {
+					"rgbw": true
+				}
+			}
+		},
+		"whiteAlgorithm": {
+			"type": "string",
+			"title": "edt_dev_spec_whiteAlgorithm_title",
+			"enum": ["white_off", "subtract_minimum", "sub_min_cool_adjust", "sub_min_warm_adjust", "white_from_blue"],
+			"default": "white_off",
+			"propertyOrder": 6,
+			"options": {
+				"dependencies": {
+					"rgbw": true
+				}
+			}
+		},
 		"invert": {
 			"type": "boolean",
 			"format": "checkbox",
 			"title":"edt_dev_spec_invert_title",
 			"default": false,
-			"propertyOrder" : 3
+			"propertyOrder" : 7
 		}
 	},
 	"additionalProperties": true

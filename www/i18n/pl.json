@@ -520,6 +520,7 @@
   "edt_dev_spec_useEntertainmentAPIV2_title": "Użyj Hue Entertainment API V2 (Dodaje obsługę pasków świetlnych z gradientem odcienia)",
   "edt_dev_spec_useOrbSmoothing_title": "Użyj wygładzania kuli",
   "edt_dev_spec_useRgbwProtocol_title": "Użyj protokołu RGBW",
+  "edt_dev_spec_swapWG_title": "Zamień W i G",
   "edt_dev_spec_username_title": "Nazwa użytkownika",
   "edt_dev_spec_verbose_title": "Rejestruj wszystkie polecenia Hue",
   "edt_dev_spec_vid_title": "VID",

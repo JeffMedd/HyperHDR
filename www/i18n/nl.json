@@ -520,6 +520,7 @@
   "edt_dev_spec_useEntertainmentAPIV2_title": "Gebruik Hue Entertainment API V2 (voegt ondersteuning toe voor hue gradient light strips)",
   "edt_dev_spec_useOrbSmoothing_title": "Orb smoothing gebruiken",
   "edt_dev_spec_useRgbwProtocol_title": "RGBW-protocol gebruiken",
+  "edt_dev_spec_swapWG_title": "W en G omwisselen",
   "edt_dev_spec_username_title": "gebruikersnaam",
   "edt_dev_spec_verbose_title": "Alle Hue-commando's loggen",
   "edt_dev_spec_vid_title": "VID",

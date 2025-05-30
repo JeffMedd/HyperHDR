@@ -520,6 +520,7 @@
   "edt_dev_spec_useEntertainmentAPIV2_title": "Použít rozhraní Hue Entertainment API V2 (přidává podporu pro světelné pruhy s přechodem odstínu)",
   "edt_dev_spec_useOrbSmoothing_title": "Použijte vyhlazování koule",
   "edt_dev_spec_useRgbwProtocol_title": "Použijte protokol RGBW",
+  "edt_dev_spec_swapWG_title": "Prohodit W a G",
   "edt_dev_spec_username_title": "Uživatelské jméno",
   "edt_dev_spec_verbose_title": "Zaznamenejte si všechny příkazy Hue",
   "edt_dev_spec_vid_title": "VID",

@@ -35,6 +35,8 @@ private:
 	int _channel;
 	RGBW::WhiteAlgorithm _whiteAlgorithm;
 	ColorRgbw _temp_rgbw;
+	bool _useRgbw;
+	bool _swapWG;
 
 	static bool isRegistered;
 };
