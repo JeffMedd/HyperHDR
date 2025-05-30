@@ -1,0 +1,79 @@
+{
+    "type": "object",
+    "required": true,
+    "properties": {
+        "gpio": {
+            "type": "integer",
+            "title": "edt_dev_spec_gpio_title",
+            "default": 18,
+            "minimum": 10,
+            "maximum": 40,
+            "access": "system",
+            "propertyOrder": 1
+        },
+        "leds": {
+            "type": "integer",
+            "title": "edt_dev_spec_ledCount_title",
+            "default": 256,
+            "minimum": 1,
+            "maximum": 8192,
+            "access": "system",
+            "propertyOrder": 2
+        },
+        "pwmchannel": {
+            "type": "integer",
+            "title": "edt_dev_spec_pwmchannel_title",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 1,
+            "access": "system",
+            "propertyOrder": 3
+        },
+        "dma": {
+            "type": "integer",
+            "title": "edt_dev_spec_dma_title",
+            "default": 5,
+            "minimum": 0,
+            "maximum": 14,
+            "access": "expert",
+            "propertyOrder": 4
+        },
+        "freq": {
+            "type": "integer",
+            "title": "edt_dev_spec_frequency_title",
+            "default": 800000,
+            "minimum": 600000,
+            "maximum": 1000000,
+            "access": "expert",
+            "append": "edt_append_hz",
+            "propertyOrder": 5
+        },
+        "invert": {
+            "type": "integer",
+            "title": "edt_dev_spec_invert_title",
+            "enum": [0, 1],
+            "default": 0,
+            "access": "expert",
+            "propertyOrder": 6
+        },
+        "whiteAlgorithm": {
+            "type": "string",
+            "title": "edt_dev_spec_whiteAlgorithm_title",
+            "enum": ["white_off"],
+            "default": "white_off",
+            "access": "expert",
+            "propertyOrder": 7
+        },
+        "rewriteTime": {
+            "type": "integer",
+            "title": "edt_dev_spec_rewriteTime_title",
+            "default": 1000,
+            "minimum": 1,
+            "maximum": 30000,
+            "append": "edt_append_ms",
+            "access": "expert",
+            "propertyOrder": 8
+        }
+    },
+    "additionalProperties": false
+}

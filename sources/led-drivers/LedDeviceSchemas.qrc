@@ -27,9 +27,9 @@
 		<file alias="schema-udpe131">schemas/schema-e131.json</file>
 		<file alias="schema-udpartnet">schemas/schema-artnet.json</file>
 		<file alias="schema-udph801">schemas/schema-h801.json</file>
-		<file alias="schema-udpraw">schemas/schema-udpraw.json</file>
-		<file alias="schema-ws2801">schemas/schema-ws2801.json</file>
-		<file alias="schema-ws2812spi">schemas/schema-ws2812spi.json</file>
+		<file alias="schema-udpraw">schemas/schema-udpraw.json</file>		<file alias="schema-ws2801">schemas/schema-ws2801.json</file>
+		<file alias="schema-ws2812spi">schemas/schema-ws2812spi.json</file>		<file alias="schema-ws2814fspi">schemas/schema-ws2814fspi.json</file>
+		<file alias="schema-ws2814fpwm">schemas/schema-ws2814fpwm.json</file>
 		<file alias="schema-apa104">schemas/schema-apa104.json</file>
 		<file alias="schema-ws281x">schemas/schema-ws281x.json</file>
 		<file alias="schema-karate">schemas/schema-karate.json</file>
