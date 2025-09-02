@@ -136,11 +136,11 @@ jobs:
         with:
           name: release-artifact-${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}  
           path: repo
-
   Upload:
     name: Upload to Github Pages
     runs-on: ubuntu-22.04
-    needs: [Linux]
+    # Temporarily disabled due to Linux job being disabled
+    # needs: [Linux]
 
     steps:
       # Download artifacts from previous build process
