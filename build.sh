@@ -174,7 +174,6 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 	# Debug: Show repository information
 	echo "GITHUB_REPOSITORY = ${GITHUB_REPOSITORY}"
 	echo "Checking if this is the original awawa-dev/HyperHDR repository..."
-	
 	# set GitHub Container Registry url - use public images for forks
 	if [[ "$GITHUB_REPOSITORY" == "awawa-dev/HyperHDR" ]]; then
 		echo "Using private GitHub Container Registry for original repository"
@@ -249,8 +248,7 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 	else
 		executeCommand="cd build && ( cmake ${BUILD_OPTION} -DPLATFORM=${PLATFORM} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDEBIAN_NAME_TAG=${DOCKER_TAG} ../ || exit 2 )"
 		executeCommand+=" && ( make -j $(nproc) package || exit 3 )"
-	fi	# run docker
-	echo "Final Docker configuration:"
+	fi	# run docker	echo "Final Docker configuration:"
 	if [[ "$GITHUB_REPOSITORY" == "awawa-dev/HyperHDR" ]]; then
 		# Use pre-built containers for original repository
 		echo "Using pre-built container for original repository"
@@ -277,9 +275,16 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config"
 				;;		esac
 	fi
-	
-	echo "About to run Docker with image: $DOCKER_IMAGE_FULL"
+		echo "About to run Docker with image: $DOCKER_IMAGE_FULL"
 	echo "Install dependencies command: $INSTALL_DEPS"
+	
+	# Final safety check: ensure we're not accidentally trying to use private registry in a fork
+	if [[ "$GITHUB_REPOSITORY" != "awawa-dev/HyperHDR" ]] && [[ "$DOCKER_IMAGE_FULL" == *"ghcr.io/awawa-dev"* ]]; then
+		echo "ERROR: Detected attempt to use private registry in forked repository!"
+		echo "Forcing fallback to public Ubuntu image..."
+		DOCKER_IMAGE_FULL="ubuntu:latest"
+		INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev"
+	fi
 	
 	docker run --rm \
 	-v "${CI_BUILD_DIR}/.ccache:/.ccache" \
