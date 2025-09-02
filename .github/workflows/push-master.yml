@@ -113,7 +113,9 @@ jobs:
         continue-on-error: true
         with:
           ref: ${{ github.event.ref }}
-          key: ${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-ccache-      - name: Check default version
+          key: ${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-ccache-
+
+      - name: Check default version
         if: matrix.linuxVersion != 'bullseye'
         run: |
           echo "USE_STANDARD_INSTALLER_NAME=true" >> $GITHUB_ENV
@@ -152,10 +154,10 @@ jobs:
 ######################
 ######## macOS #######
 ######################
-
   macOS:
     name: ${{ matrix.JOB_NAME }}
     runs-on: ${{ matrix.JOB_RUNNER }}
+    
     strategy:
       matrix:
         include:        
@@ -167,6 +169,7 @@ jobs:
             JOB_NAME: macOS 13 (x64)
             QT_VERSION: 6
             NICE_NAME: x64
+
     steps:
       # Checkout
       - uses: actions/checkout@v4.2.2
