@@ -170,7 +170,6 @@ elif [[ $CI_NAME == *"mingw64_nt"* || "$CI_NAME" == 'windows_nt' ]]; then
 
 elif [[ "$CI_NAME" == 'linux' ]]; then
 	echo "Compile Hyperhdr with DOCKER_IMAGE = ${DOCKER_IMAGE}, DOCKER_TAG = ${DOCKER_TAG} and friendly name DOCKER_NAME = ${DOCKER_NAME}"
-	
 	# set GitHub Container Registry url
 	REGISTRY_URL="ghcr.io/awawa-dev/${DOCKER_IMAGE}"
 	
