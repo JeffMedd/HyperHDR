@@ -41,11 +41,11 @@ jobs:
             dockerImage: x86_64
             linuxVersion: noble
             dockerName: Ubuntu 24.04 LTS (x86_64)
-            platform: linux
-          - runner: ubuntu-24.04
+            platform: linux          - runner: ubuntu-24.04
             dockerImage: x86_64
             linuxVersion: oracular
-            dockerName: Ubuntu 24.10 (x86_64)            platform: linux
+            dockerName: Ubuntu 24.10 (x86_64)
+            platform: linux
           - runner: ubuntu-24.04
             dockerImage: x86_64
             linuxVersion: Fedora_41
@@ -109,12 +109,12 @@ jobs:
         continue-on-error: true
         with:
           ref: ${{ github.event.ref }}
-          key: ${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-ccache-
-
-      - name: Check default version
+          key: ${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-ccache-      - name: Check default version
         if: matrix.linuxVersion != 'bullseye'
         run: |
-          echo "USE_STANDARD_INSTALLER_NAME=true" >> $GITHUB_ENV      - name: Build packages
+          echo "USE_STANDARD_INSTALLER_NAME=true" >> $GITHUB_ENV
+
+      - name: Build packages
         env:
           DOCKER_IMAGE: ${{ matrix.dockerImage }}
           DOCKER_TAG: ${{ matrix.linuxVersion }}
