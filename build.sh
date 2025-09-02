@@ -233,7 +233,7 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		cp cmake/linux/arch/* .
 		chmod -R a+rw ${CI_BUILD_DIR}/deploy
 		versionFile=`cat version`
-		executeCommand="GLIBC_VER=\\\$(ldd --version | head -1 | awk '{print \\\$NF}') && echo \"GLIBC version: \\\$GLIBC_VER\" && sed -i \"s/{GLIBC_VERSION}/\\\$GLIBC_VER/\" PKGBUILD && makepkg"
+		executeCommand="GLIBC_VER=\\\$(ldd --version | head -1 | grep -o '[0-9]\\+\\.[0-9]\\+') && echo \"GLIBC version: \\\$GLIBC_VER\" && sed -i \"s/{GLIBC_VERSION}/\\\$GLIBC_VER/\" PKGBUILD && makepkg"
 		echo ${executeCommand}
 		sed -i "s/{VERSION}/${versionFile}/" PKGBUILD
 		if [ ${USE_CCACHE} = true ]; then
