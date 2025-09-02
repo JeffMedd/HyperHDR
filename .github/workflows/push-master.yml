@@ -17,8 +17,7 @@ jobs:
 ######################
 
   Linux:
-    name: ${{ matrix.dockerName }}
-    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.dockerName }}    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
         include:
@@ -36,7 +35,8 @@ jobs:
             dockerImage: x86_64
             linuxVersion: jammy
             dockerName: Ubuntu 22.04 LTS (x86_64)
-            platform: linux          - runner: ubuntu-24.04
+            platform: linux
+          - runner: ubuntu-24.04
             dockerImage: x86_64
             linuxVersion: noble
             dockerName: Ubuntu 24.04 LTS (x86_64)
