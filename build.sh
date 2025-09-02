@@ -253,11 +253,11 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		# Use pre-built containers for original repository
 		echo "Using pre-built container for original repository"
 		DOCKER_IMAGE_FULL="$REGISTRY_URL:$DOCKER_TAG"
-		INSTALL_DEPS=""
-	else
+		INSTALL_DEPS=""	else
 		# Use public images and install dependencies for forks
 		echo "Using public image with dependency installation for fork"
-		DOCKER_IMAGE_FULL="$REGISTRY_URL"		case "${DOCKER_TAG}" in
+		DOCKER_IMAGE_FULL="$REGISTRY_URL"
+		case "${DOCKER_TAG}" in
 			"bullseye"|"bookworm")
 				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libqt5x11extras5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev ccache"
 				;;
