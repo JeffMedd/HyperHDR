@@ -106,6 +106,7 @@ Created `validate_build_syntax.sh` with checks for:
 12. **Missing Newline #6**: Fixed concatenated chmod command and else statement ⭐ **Latest**
 13. **Missing Newline #7**: Fixed concatenated INSTALL_DEPS assignment and else clause ⭐ **Latest**  
 14. **Missing Newline #8**: Fixed concatenated sed command and fi statement ⭐ **Latest**
+15. **Missing Newline #9**: Fixed concatenated if statement and sed command ⭐ **Latest**
 
 ## Result
 - All syntax errors resolved

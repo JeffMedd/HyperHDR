@@ -235,7 +235,8 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		chmod -R a+rw ${CI_BUILD_DIR}/deploy
 		versionFile=`cat version`
 		executeCommand="GLIBC_VER=\\\$(ldd --version | head -1 | sed 's/.*\\([0-9]\\+\\.[0-9]\\+\\).*/\\1/') && echo \"GLIBC version: \\\$GLIBC_VER\" && sed -i \"s/{GLIBC_VERSION}/\\\$GLIBC_VER/\" PKGBUILD && makepkg"
-		echo ${executeCommand}		sed -i "s/{VERSION}/${versionFile}/" PKGBUILD
+		echo ${executeCommand}
+		sed -i "s/{VERSION}/${versionFile}/" PKGBUILD
 		if [ ${USE_CCACHE} = true ]; then
 			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION} -DUSE_PRECOMPILED_HEADERS=OFF/" PKGBUILD
 		else
@@ -250,7 +251,8 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 	# run docker
 	echo "Final Docker configuration:"
 	if [[ "$GITHUB_REPOSITORY" == "awawa-dev/HyperHDR" ]]; then
-		# Use pre-built containers for original repository		echo "Using pre-built container for original repository"
+		# Use pre-built containers for original repository
+		echo "Using pre-built container for original repository"
 		DOCKER_IMAGE_FULL="$REGISTRY_URL:$DOCKER_TAG"
 		INSTALL_DEPS=""
 	else
@@ -275,9 +277,9 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		esac
 	fi
 	
-	echo "About to run Docker with image: $DOCKER_IMAGE_FULL"
-	echo "Install dependencies command: $INSTALL_DEPS"
-		# Final safety check: ensure we're not accidentally trying to use private registry in a fork
+	echo "About to run Docker with image: $DOCKER_IMAGE_FULL"	echo "Install dependencies command: $INSTALL_DEPS"
+	
+	# Final safety check: ensure we're not accidentally trying to use private registry in a fork
 	if [[ "$GITHUB_REPOSITORY" != "awawa-dev/HyperHDR" ]] && [[ "$DOCKER_IMAGE_FULL" == *"ghcr.io/awawa-dev"* ]]; then
 		echo "ERROR: Detected attempt to use private registry in forked repository!"
 		echo "Forcing fallback to public Ubuntu image..."
