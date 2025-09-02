@@ -269,11 +269,11 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 				;;
 			"ArchLinux")
 				INSTALL_DEPS="pacman -Syu --noconfirm base-devel cmake git pkgconf qt5-base qt5-serialport qt5-svg libusb python libxrandr avahi openssl pulseaudio mesa libjpeg-turbo alsa-lib qt5-charts ccache"
-				;;
-			*)
+				;;			*)
 				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config ccache"
 				;;
-		esac	fi
+		esac
+	fi
 	
 	echo "About to run Docker with image: $DOCKER_IMAGE_FULL"
 	echo "Install dependencies command: $INSTALL_DEPS"
