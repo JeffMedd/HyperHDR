@@ -31,7 +31,8 @@ jobs:
             dockerImage: x86_64
             linuxVersion: bookworm
             dockerName: Debian Bookworm (x86_64)
-            platform: linux          - runner: ubuntu-24.04
+            platform: linux
+          - runner: ubuntu-24.04
             dockerImage: x86_64
             linuxVersion: jammy
             dockerName: Ubuntu 22.04 LTS (x86_64)
@@ -55,7 +56,8 @@ jobs:
             dockerImage: x86_64
             linuxVersion: ArchLinux
             dockerName: Arch Linux (x86_64)
-            platform: linux          - runner: ubuntu-24.04-arm
+            platform: linux
+          - runner: ubuntu-24.04-arm
             dockerImage: arm-32bit-armv6l-native
             linuxVersion: bullseye
             dockerName: Debian Bullseye (native ARM 32-bit Raspberry Pi OS)
@@ -74,7 +76,9 @@ jobs:
             dockerImage: arm-64bit-aarch64-native
             linuxVersion: bookworm
             dockerName: Debian Bookworm (native ARM 64-bit Raspberry Pi OS)
-            platform: rpi    steps:
+            platform: rpi
+
+    steps:
       # start docker
       - name: Wake-up docker
         if: matrix.runner == 'ubuntu-24.04-arm'
