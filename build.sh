@@ -296,10 +296,10 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		chown -R builder:builder /deploy && 
 		cd /hyperhdr && 
 		su builder -c '${executeCommand}' &&
-		(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&
-		(su builder -c 'ccache -sv' || true) &&
+		(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&		(su builder -c 'ccache -sv' || true) &&
 		exit 0;
-		exit 1 " || { echo "---> HyperHDR compilation failed! Abort"; exit 5; }	else
+		exit 1 " || { echo "---> HyperHDR compilation failed! Abort"; exit 5; }
+	else
 		docker run --rm \
 		-v "${CI_BUILD_DIR}/.ccache:/.ccache" \
 		-v "${CI_BUILD_DIR}/deploy:/deploy" \
