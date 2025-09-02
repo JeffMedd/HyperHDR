@@ -170,8 +170,45 @@ elif [[ $CI_NAME == *"mingw64_nt"* || "$CI_NAME" == 'windows_nt' ]]; then
 
 elif [[ "$CI_NAME" == 'linux' ]]; then
 	echo "Compile Hyperhdr with DOCKER_IMAGE = ${DOCKER_IMAGE}, DOCKER_TAG = ${DOCKER_TAG} and friendly name DOCKER_NAME = ${DOCKER_NAME}"
-	# set GitHub Container Registry url
-	REGISTRY_URL="ghcr.io/awawa-dev/${DOCKER_IMAGE}"
+	
+	# Debug: Show repository information
+	echo "GITHUB_REPOSITORY = ${GITHUB_REPOSITORY}"
+	echo "Checking if this is the original awawa-dev/HyperHDR repository..."
+	
+	# set GitHub Container Registry url - use public images for forks
+	if [[ "$GITHUB_REPOSITORY" == "awawa-dev/HyperHDR" ]]; then
+		echo "Using private GitHub Container Registry for original repository"
+		REGISTRY_URL="ghcr.io/awawa-dev/${DOCKER_IMAGE}"
+	else
+		echo "Using public Docker images for forked repository: ${GITHUB_REPOSITORY}"
+		# Use public Docker images for forks
+		case "${DOCKER_TAG}" in
+			"bullseye")
+				REGISTRY_URL="debian:bullseye-slim"
+				;;
+			"bookworm")
+				REGISTRY_URL="debian:bookworm-slim"
+				;;
+			"jammy")
+				REGISTRY_URL="ubuntu:jammy"
+				;;
+			"noble")
+				REGISTRY_URL="ubuntu:noble"
+				;;
+			"oracular")
+				REGISTRY_URL="ubuntu:oracular"
+				;;
+			"Fedora_41")
+				REGISTRY_URL="fedora:41"
+				;;
+			"ArchLinux")
+				REGISTRY_URL="archlinux:latest"
+				;;
+			*)
+				REGISTRY_URL="ubuntu:latest"
+				;;
+		esac
+	fi
 	
 	# take ownership of deploy dir
 	mkdir -p ${CI_BUILD_DIR}/deploy
@@ -212,15 +249,44 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 	else
 		executeCommand="cd build && ( cmake ${BUILD_OPTION} -DPLATFORM=${PLATFORM} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDEBIAN_NAME_TAG=${DOCKER_TAG} ../ || exit 2 )"
 		executeCommand+=" && ( make -j $(nproc) package || exit 3 )"
+	fi	# run docker
+	echo "Final Docker configuration:"
+	if [[ "$GITHUB_REPOSITORY" == "awawa-dev/HyperHDR" ]]; then
+		# Use pre-built containers for original repository
+		echo "Using pre-built container for original repository"
+		DOCKER_IMAGE_FULL="$REGISTRY_URL:$DOCKER_TAG"
+		INSTALL_DEPS=""
+	else
+		# Use public images and install dependencies for forks
+		echo "Using public image with dependency installation for fork"
+		DOCKER_IMAGE_FULL="$REGISTRY_URL"
+		case "${DOCKER_TAG}" in
+			"bullseye"|"bookworm")
+				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libqt5x11extras5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev"
+				;;
+			"jammy"|"noble"|"oracular")
+				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev"
+				;;
+			"Fedora_41")
+				INSTALL_DEPS="dnf install -y gcc gcc-c++ cmake git pkgconfig qt5-qtbase-devel qt5-qtserialport-devel libusb1-devel python3-devel libXrandr-devel avahi-devel openssl-devel pulseaudio-libs-devel mesa-libGL-devel turbojpeg-devel alsa-lib-devel qt5-qtcharts-devel qt5-qtsvg-devel"
+				;;
+			"ArchLinux")
+				INSTALL_DEPS="pacman -Syu --noconfirm base-devel cmake git pkgconf qt5-base qt5-serialport qt5-svg libusb python libxrandr avahi openssl pulseaudio mesa libjpeg-turbo alsa-lib qt5-charts"
+				;;
+			*)
+				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config"
+				;;		esac
 	fi
-
-	# run docker
+	
+	echo "About to run Docker with image: $DOCKER_IMAGE_FULL"
+	echo "Install dependencies command: $INSTALL_DEPS"
+	
 	docker run --rm \
 	-v "${CI_BUILD_DIR}/.ccache:/.ccache" \
 	-v "${CI_BUILD_DIR}/deploy:/deploy" \
 	-v "${CI_BUILD_DIR}:/source:ro" \
-	$REGISTRY_URL:$DOCKER_TAG \
-	/bin/bash -c "${cache_env} && cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr &&
+	$DOCKER_IMAGE_FULL \
+	/bin/bash -c "${INSTALL_DEPS} && ${cache_env} && cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr &&
 	cd /hyperhdr && mkdir build && (${executeCommand}) &&
 	(cp /hyperhdr/build/bin/h* /deploy/ 2>/dev/null || : ) &&
 	(cp /hyperhdr/build/Hyper* /deploy/ 2>/dev/null || : ) &&
