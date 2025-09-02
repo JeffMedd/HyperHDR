@@ -235,9 +235,9 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		chmod -R a+rw ${CI_BUILD_DIR}/deploy
 		versionFile=`cat version`
 		executeCommand="GLIBC_VER=\\\$(ldd --version | head -1 | sed 's/.*\\([0-9]\\+\\.[0-9]\\+\\).*/\\1/') && echo \"GLIBC version: \\\$GLIBC_VER\" && sed -i \"s/{GLIBC_VERSION}/\\\$GLIBC_VER/\" PKGBUILD && makepkg"
-		echo ${executeCommand}
-		sed -i "s/{VERSION}/${versionFile}/" PKGBUILD
-		if [ ${USE_CCACHE} = true ]; then		sed -i "s/{BUILD_OPTION}/${BUILD_OPTION} -DUSE_PRECOMPILED_HEADERS=OFF/" PKGBUILD
+		echo ${executeCommand}		sed -i "s/{VERSION}/${versionFile}/" PKGBUILD
+		if [ ${USE_CCACHE} = true ]; then
+			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION} -DUSE_PRECOMPILED_HEADERS=OFF/" PKGBUILD
 		else
 			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION}/" PKGBUILD
 		fi
