@@ -15,9 +15,9 @@ jobs:
 ######################
 ###### Linux #########
 ######################
-
   Linux:
-    name: ${{ matrix.dockerName }}    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.dockerName }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
         include:
