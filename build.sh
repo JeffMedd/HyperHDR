@@ -272,28 +272,51 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 	fi
 		echo "About to run Docker with image: $DOCKER_IMAGE_FULL"
 	echo "Install dependencies command: $INSTALL_DEPS"
-	
-	# Final safety check: ensure we're not accidentally trying to use private registry in a fork
+		# Final safety check: ensure we're not accidentally trying to use private registry in a fork
 	if [[ "$GITHUB_REPOSITORY" != "awawa-dev/HyperHDR" ]] && [[ "$DOCKER_IMAGE_FULL" == *"ghcr.io/awawa-dev"* ]]; then
 		echo "ERROR: Detected attempt to use private registry in forked repository!"
 		echo "Forcing fallback to public Ubuntu image..."
 		DOCKER_IMAGE_FULL="ubuntu:latest"
-		INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev"
+		INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev ccache"
 	fi
 	
-	docker run --rm \
-	-v "${CI_BUILD_DIR}/.ccache:/.ccache" \
-	-v "${CI_BUILD_DIR}/deploy:/deploy" \
-	-v "${CI_BUILD_DIR}:/source:ro" \
-	$DOCKER_IMAGE_FULL \
-	/bin/bash -c "${INSTALL_DEPS} && ${cache_env} && cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr &&
-	cd /hyperhdr && mkdir build && (${executeCommand}) &&
-	(cp /hyperhdr/build/bin/h* /deploy/ 2>/dev/null || : ) &&
-	(cp /hyperhdr/build/Hyper* /deploy/ 2>/dev/null || : ) &&
-	(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&
-	(ccache -sv || true) &&
-	exit 0;
-	exit 1 " || { echo "---> HyperHDR compilation failed! Abort"; exit 5; }
+	# Handle Arch Linux special case (needs non-root user for makepkg)
+	if [[ "$DOCKER_TAG" == "ArchLinux" ]]; then
+		echo "Arch Linux build - creating non-root user for makepkg"
+		docker run --rm \
+		-v "${CI_BUILD_DIR}/.ccache:/.ccache" \
+		-v "${CI_BUILD_DIR}/deploy:/deploy" \
+		-v "${CI_BUILD_DIR}:/source:ro" \
+		$DOCKER_IMAGE_FULL \
+		/bin/bash -c "${INSTALL_DEPS} && 
+		useradd -m -s /bin/bash builder && 
+		echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers && 
+		${cache_env} && 
+		cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr && 
+		chown -R builder:builder /hyperhdr && 
+		chown -R builder:builder /.ccache && 
+		chown -R builder:builder /deploy && 
+		cd /hyperhdr && 
+		su builder -c '${executeCommand}' &&
+		(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&
+		(su builder -c 'ccache -sv' || true) &&
+		exit 0;
+		exit 1 " || { echo "---> HyperHDR compilation failed! Abort"; exit 5; }
+	else
+		docker run --rm \
+		-v "${CI_BUILD_DIR}/.ccache:/.ccache" \
+		-v "${CI_BUILD_DIR}/deploy:/deploy" \
+		-v "${CI_BUILD_DIR}:/source:ro" \
+		$DOCKER_IMAGE_FULL \
+		/bin/bash -c "${INSTALL_DEPS} && ${cache_env} && cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr &&
+		cd /hyperhdr && mkdir build && (${executeCommand}) &&
+		(cp /hyperhdr/build/bin/h* /deploy/ 2>/dev/null || : ) &&
+		(cp /hyperhdr/build/Hyper* /deploy/ 2>/dev/null || : ) &&
+		(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&
+		(ccache -sv || true) &&
+		exit 0;
+		exit 1 " || { echo "---> HyperHDR compilation failed! Abort"; exit 5; }
+	fi
 	
 	# overwrite file owner to current user
 	sudo chown -fR $(stat -c "%U:%G" ${CI_BUILD_DIR}/deploy) ${CI_BUILD_DIR}/deploy
