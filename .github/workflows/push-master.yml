@@ -15,143 +15,135 @@ jobs:
 ######################
 ###### Linux #########
 ######################
-# Temporarily disabled due to Docker image access issues in fork
-# Re-enable when Docker images are available or use alternative approach
-# Linux:
-#   name: ${{ matrix.dockerName }}
-#   runs-on: ${{ matrix.runner }}# Temporarily disabled due to Docker image access issues in fork
-# Re-enable when Docker images are available or use alternative approach
-#   strategy:
-#     matrix:
-#       include:
-#         - runner: ubuntu-24.04
-#           dockerImage: x86_64
-#           linuxVersion: bullseye
-#           dockerName: Debian Bullseye (x86_64)
-#           platform: linux
-#         - runner: ubuntu-24.04
-#           dockerImage: x86_64
-#           linuxVersion: bookworm
-#           dockerName: Debian Bookworm (x86_64)
-#           platform: linux
-#         - runner: ubuntu-24.04
-#           dockerImage: x86_64
-#           linuxVersion: jammy
-#           dockerName: Ubuntu 22.04 LTS (x86_64)
-#           platform: linux
-#         - runner: ubuntu-24.04
-#           dockerImage: x86_64
-#           linuxVersion: noble
-#           dockerName: Ubuntu 24.04 LTS (x86_64)
-#           platform: linux
-#         # Ubuntu 24.10 temporarily disabled due to Docker image availability
-#         # - runner: ubuntu-24.04
-#         #   dockerImage: x86_64
-#         #   linuxVersion: oracular
-#         #   dockerName: Ubuntu 24.10 (x86_64)
-#         #   platform: linux
-#         - runner: ubuntu-24.04
-#           dockerImage: x86_64
-#           linuxVersion: Fedora_41
-#           dockerName: Fedora 41 (x86_64)
-#           platform: linux
-#         - runner: ubuntu-24.04
-#           dockerImage: x86_64
-#           linuxVersion: ArchLinux
-#           dockerName: Arch Linux (x86_64)
-#           platform: linux
-#         - runner: ubuntu-24.04-arm
-#           dockerImage: arm-32bit-armv6l-native
-#           linuxVersion: bullseye
-#           dockerName: Debian Bullseye (native ARM 32-bit Raspberry Pi OS)
-#           platform: rpi
-#         - runner: ubuntu-24.04-arm
-#           dockerImage: arm-64bit-aarch64-native
-#           linuxVersion: bullseye
-#           dockerName: Debian Bullseye (native ARM 64-bit Raspberry Pi OS)
-#           platform: rpi
-#         - runner: ubuntu-24.04-arm
-#           dockerImage: arm-32bit-armv6l-native
-#           linuxVersion: bookworm
-#           dockerName: Debian Bookworm (native ARM 32-bit Raspberry Pi OS)
-#           platform: rpi
-#         - runner: ubuntu-24.04-arm
-#           dockerImage: arm-64bit-aarch64-native
-#           linuxVersion: bookworm
-#           dockerName: Debian Bookworm (native ARM 64-bit Raspberry Pi OS)
-#           platform: rpi
-#   steps:
-#     # start docker
-#     - name: Wake-up docker
-#       if: matrix.runner == 'ubuntu-24.04-arm'
-#       run: |
-#         (sudo systemctl start docker) || (echo "Retrying docker" && sleep 5 && sudo systemctl start docker && sleep 5)
-#
-#     # checkout
-#     - uses: actions/checkout@v4.2.2
-#       with:
-#         submodules: true
-#
-#     # generate cache id
-#     - name: Prepare ccache timestamp
-#       if: env.USE_CACHE == 'true'
-#       id: ccache_cache_timestamp
-#       shell: cmake -P {0}
-#       run: |
-#         string(TIMESTAMP current_date "%Y-%m-%d-%H-%M-%S" UTC)
-#         file(APPEND "$ENV{GITHUB_OUTPUT}" "timestamp=${current_date}")
-#
-#      # download cache
-#     - name: Download ccache files
-#       if: env.USE_CACHE == 'true'
-#       uses: actions/cache@v4.2.3
-#       with:
-#          path: .ccache
-#          key: ${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
-#          restore-keys: ${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-ccache-
-#
-#     - name: Clear branch ccache storage
-#       uses: yumemi-inc/clean-cache-action@v1
-#       continue-on-error: true
-#       with:
-#         ref: ${{ github.event.ref }}
-#         key: ${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-ccache-
-#
-#     - name: Check default version
-#       if: matrix.linuxVersion != 'bullseye'
-#       run: |
-#         echo "USE_STANDARD_INSTALLER_NAME=true" >> $GITHUB_ENV
-#
-#     - name: Build packages
-#       env:
-#         DOCKER_IMAGE: ${{ matrix.dockerImage }}
-#         DOCKER_TAG: ${{ matrix.linuxVersion }}
-#         DOCKER_NAME: ${{ matrix.dockerName }}
-#         PLATFORM: ${{ matrix.platform }}
-#         USE_CCACHE: ${{ env.USE_CACHE }}
-#         RESET_CACHE: ${{ env.RESET_CACHE }}
-#       shell: bash
-#       run: |
-#         ./build.sh
-#
-#     # Upload artifacts (only on tagged commit)
-#     - name: Upload artifacts
-#       if: startsWith(github.event.ref, 'refs/tags') && github.event_name != 'pull_request'
-#       uses: actions/upload-artifact@v4.6.2
-#       with:
-#         name: release-artifact-${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}
-#         path: deploy/Hyper*
-#
-#     # Upload artifacts from commit
-#     - name: Upload artifacts from commit
-#       if: (startsWith(github.event.ref, 'refs/tags') != true) && github.event_name != 'pull_request'
-#       uses: actions/upload-artifact@v4.6.2
-#       with:
-#         name: Linux-${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-installer
-#         path: |
-#           deploy/Hyper*.deb
-#           deploy/Hyper*.zst
-#           deploy/Hyper*.rpm
+  Linux:
+    name: ${{ matrix.dockerName }}
+    runs-on: ${{ matrix.runner }}
+    
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            dockerImage: x86_64
+            linuxVersion: bullseye
+            dockerName: Debian Bullseye (x86_64)
+            platform: linux
+          - runner: ubuntu-24.04
+            dockerImage: x86_64
+            linuxVersion: bookworm
+            dockerName: Debian Bookworm (x86_64)
+            platform: linux
+          - runner: ubuntu-24.04
+            dockerImage: x86_64
+            linuxVersion: jammy
+            dockerName: Ubuntu 22.04 LTS (x86_64)
+            platform: linux
+          - runner: ubuntu-24.04
+            dockerImage: x86_64
+            linuxVersion: noble
+            dockerName: Ubuntu 24.04 LTS (x86_64)
+            platform: linux
+          - runner: ubuntu-24.04
+            dockerImage: x86_64
+            linuxVersion: oracular
+            dockerName: Ubuntu 24.10 (x86_64)            platform: linux
+          - runner: ubuntu-24.04
+            dockerImage: x86_64
+            linuxVersion: Fedora_41
+            dockerName: Fedora 41 (x86_64)
+            platform: linux
+          - runner: ubuntu-24.04
+            dockerImage: x86_64
+            linuxVersion: ArchLinux
+            dockerName: Arch Linux (x86_64)
+            platform: linux          - runner: ubuntu-24.04-arm
+            dockerImage: arm-32bit-armv6l-native
+            linuxVersion: bullseye
+            dockerName: Debian Bullseye (native ARM 32-bit Raspberry Pi OS)
+            platform: rpi
+          - runner: ubuntu-24.04-arm
+            dockerImage: arm-64bit-aarch64-native
+            linuxVersion: bullseye
+            dockerName: Debian Bullseye (native ARM 64-bit Raspberry Pi OS)
+            platform: rpi
+          - runner: ubuntu-24.04-arm
+            dockerImage: arm-32bit-armv6l-native
+            linuxVersion: bookworm
+            dockerName: Debian Bookworm (native ARM 32-bit Raspberry Pi OS)
+            platform: rpi
+          - runner: ubuntu-24.04-arm
+            dockerImage: arm-64bit-aarch64-native
+            linuxVersion: bookworm
+            dockerName: Debian Bookworm (native ARM 64-bit Raspberry Pi OS)
+            platform: rpi    steps:
+      # start docker
+      - name: Wake-up docker
+        if: matrix.runner == 'ubuntu-24.04-arm'
+        run: |
+          (sudo systemctl start docker) || (echo "Retrying docker" && sleep 5 && sudo systemctl start docker && sleep 5)
+
+      # checkout
+      - uses: actions/checkout@v4.2.2
+        with:
+          submodules: true
+
+      # generate cache id
+      - name: Prepare ccache timestamp
+        if: env.USE_CACHE == 'true'
+        id: ccache_cache_timestamp
+        shell: cmake -P {0}
+        run: |
+          string(TIMESTAMP current_date "%Y-%m-%d-%H-%M-%S" UTC)
+          file(APPEND "$ENV{GITHUB_OUTPUT}" "timestamp=${current_date}")
+
+       # download cache
+      - name: Download ccache files
+        if: env.USE_CACHE == 'true'
+        uses: actions/cache@v4.2.3
+        with:
+           path: .ccache
+           key: ${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
+           restore-keys: ${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-ccache-
+
+      - name: Clear branch ccache storage
+        uses: yumemi-inc/clean-cache-action@v1
+        continue-on-error: true
+        with:
+          ref: ${{ github.event.ref }}
+          key: ${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-ccache-
+
+      - name: Check default version
+        if: matrix.linuxVersion != 'bullseye'
+        run: |
+          echo "USE_STANDARD_INSTALLER_NAME=true" >> $GITHUB_ENV      - name: Build packages
+        env:
+          DOCKER_IMAGE: ${{ matrix.dockerImage }}
+          DOCKER_TAG: ${{ matrix.linuxVersion }}
+          DOCKER_NAME: ${{ matrix.dockerName }}
+          PLATFORM: ${{ matrix.platform }}
+          USE_CCACHE: ${{ env.USE_CACHE }}
+          RESET_CACHE: ${{ env.RESET_CACHE }}
+        shell: bash
+        run: |
+          ./build.sh
+
+      # Upload artifacts (only on tagged commit)
+      - name: Upload artifacts
+        if: startsWith(github.event.ref, 'refs/tags') && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: release-artifact-${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}
+          path: deploy/Hyper*
+
+      # Upload artifacts from commit
+      - name: Upload artifacts from commit
+        if: (startsWith(github.event.ref, 'refs/tags') != true) && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: Linux-${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}-installer
+          path: |
+            deploy/Hyper*.deb
+            deploy/Hyper*.zst
+            deploy/Hyper*.rpm
 
 ######################
 ######## macOS #######
@@ -386,7 +378,7 @@ jobs:
   publish:
     name: Publish Releases
     if: startsWith(github.event.ref, 'refs/tags') && github.event_name != 'pull_request'
-    needs: [windows, macOS]
+    needs: [Linux, windows, macOS]
     runs-on: ubuntu-22.04
     permissions:
       contents: write

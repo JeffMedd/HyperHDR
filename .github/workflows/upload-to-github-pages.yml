@@ -135,33 +135,31 @@ jobs:
         uses: actions/upload-artifact@v4.6.2
         with:
           name: release-artifact-${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}  
-          path: repo
-  Upload:
-    name: Upload to Github Pages
-    runs-on: ubuntu-22.04
-    # Temporarily disabled due to Linux job being disabled
-    # needs: [Linux]
-
-    steps:
-      # Download artifacts from previous build process
-      - uses: actions/checkout@v4.2.2
-        with:
-          submodules: false
-      - name: Download artifacts
-        uses: actions/download-artifact@v4.3.0
-        with:
-          path: repo
-          pattern: release-artifact-*
-          merge-multiple: true    
-      - name: Display structure of artifacts
-        run: ls -R repo
-      - name: Deploy the packages
-        uses: JamesIves/github-pages-deploy-action@v4.7.3
-        with:
-          repository-name: JeffMedd/awawa-dev.github.io
-          branch: upload
-          folder: repo
-          target-folder: repo
-          clean: false
-          commit-message: Release for ${{github.ref_name}}
-          ssh-key: ${{ secrets.UPLOADER_KEY }}
+          path: repo  # Upload:
+  #   name: Upload to Github Pages
+  #   runs-on: ubuntu-22.04
+  #   needs: [Linux]
+  #
+  #   steps:
+  #     # Download artifacts from previous build process
+  #     - uses: actions/checkout@v4.2.2
+  #       with:
+  #         submodules: false
+  #     - name: Download artifacts
+  #       uses: actions/download-artifact@v4.3.0
+  #       with:
+  #         path: repo
+  #         pattern: release-artifact-*
+  #         merge-multiple: true    
+  #     - name: Display structure of artifacts
+  #       run: ls -R repo
+  #     - name: Deploy the packages
+  #       uses: JamesIves/github-pages-deploy-action@v4.7.3
+  #       with:
+  #         repository-name: JeffMedd/awawa-dev.github.io
+  #         branch: upload
+  #         folder: repo
+  #         target-folder: repo
+  #         clean: false
+  #         commit-message: Release for ${{github.ref_name}}
+  #         ssh-key: ${{ secrets.UPLOADER_KEY }}
