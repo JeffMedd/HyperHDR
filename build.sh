@@ -223,9 +223,9 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		BUILD_OPTION="-DUSE_CCACHE_CACHING=OFF ${ARCHIVE_OPTION}"
 		cache_env="true"
 	fi
-
 	if [[ $DOCKER_IMAGE == *"armv6l"* ]] && [[ $CI_TYPE == "github_action" ]]; then
-		BUILD_OPTION="-DOVERRIDE_ARCHITECTURE=armv6l ${BUILD_OPTION}"			fi
+		BUILD_OPTION="-DOVERRIDE_ARCHITECTURE=armv6l ${BUILD_OPTION}"		
+	fi
 	
 	echo "Build option: ${BUILD_OPTION}, ccache: ${cache_env}"
 
@@ -242,11 +242,13 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		else
 			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION}/" PKGBUILD
 		fi
-		chmod -R a+rw ${CI_BUILD_DIR}/.ccache
-	else
+		chmod -R a+rw ${CI_BUILD_DIR}/.ccache	else
 		executeCommand="cd build && ( cmake ${BUILD_OPTION} -DPLATFORM=${PLATFORM} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDEBIAN_NAME_TAG=${DOCKER_TAG} ../ || exit 2 )"
 		executeCommand+=" && ( make -j $(nproc) package || exit 3 )"
-	fi	# run docker	echo "Final Docker configuration:"
+	fi
+	
+	# run docker
+	echo "Final Docker configuration:"
 	if [[ "$GITHUB_REPOSITORY" == "awawa-dev/HyperHDR" ]]; then
 		# Use pre-built containers for original repository
 		echo "Using pre-built container for original repository"
@@ -255,20 +257,25 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 	else
 		# Use public images and install dependencies for forks
 		echo "Using public image with dependency installation for fork"
-		DOCKER_IMAGE_FULL="$REGISTRY_URL"
-		case "${DOCKER_TAG}" in			"bullseye"|"bookworm")
+		DOCKER_IMAGE_FULL="$REGISTRY_URL"		case "${DOCKER_TAG}" in
+			"bullseye"|"bookworm")
 				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libqt5x11extras5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev ccache"
-				;;			"jammy"|"noble"|"oracular")
+				;;
+			"jammy"|"noble"|"oracular")
 				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev ccache"
-				;;			"Fedora_41")
+				;;
+			"Fedora_41")
 				INSTALL_DEPS="dnf install -y gcc gcc-c++ cmake git pkgconfig qt5-qtbase-devel qt5-qtserialport-devel libusb1-devel python3-devel libXrandr-devel avahi-devel openssl-devel pulseaudio-libs-devel mesa-libGL-devel turbojpeg-devel alsa-lib-devel qt5-qtcharts-devel qt5-qtsvg-devel ccache"
-				;;			"ArchLinux")
+				;;
+			"ArchLinux")
 				INSTALL_DEPS="pacman -Syu --noconfirm base-devel cmake git pkgconf qt5-base qt5-serialport qt5-svg libusb python libxrandr avahi openssl pulseaudio mesa libjpeg-turbo alsa-lib qt5-charts ccache"
-				;;			*)
+				;;
+			*)
 				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config ccache"
-				;;esac
-	fi
-		echo "About to run Docker with image: $DOCKER_IMAGE_FULL"
+				;;
+		esac	fi
+	
+	echo "About to run Docker with image: $DOCKER_IMAGE_FULL"
 	echo "Install dependencies command: $INSTALL_DEPS"
 		# Final safety check: ensure we're not accidentally trying to use private registry in a fork
 	if [[ "$GITHUB_REPOSITORY" != "awawa-dev/HyperHDR" ]] && [[ "$DOCKER_IMAGE_FULL" == *"ghcr.io/awawa-dev"* ]]; then
@@ -294,7 +301,8 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		chown -R builder:builder /hyperhdr && 
 		chown -R builder:builder /.ccache && 
 		chown -R builder:builder /deploy && 
-		cd /hyperhdr && 		su builder -c '${executeCommand}' &&
+		cd /hyperhdr && 
+		su builder -c '${executeCommand}' &&
 		(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&
 		(su builder -c 'ccache -sv' || true) &&
 		exit 0;
