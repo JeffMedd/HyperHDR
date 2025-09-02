@@ -43,7 +43,7 @@ DriverSpiWs2814fSPI::DriverSpiWs2814fSPI(const QJsonObject& deviceConfig)
 }
 	, _whiteAlgorithm(RGBW::stringToWhiteAlgorithm("white_off"))
 	, _useRgbw(false)
-	, _swapWG(false)
+	, _swapWB(false)
 {
 }
 
@@ -64,7 +64,7 @@ bool DriverSpiWs2814fSPI::init(const QJsonObject& deviceConfig)
 	{
 		// Get RGBW configuration
 		_useRgbw = deviceConfig["rgbw"].toBool(false);
-		_swapWG = deviceConfig["swapWG"].toBool(false);
+		_swapWB = deviceConfig["swapWB"].toBool(false);
 
 		QString whiteAlgorithm = deviceConfig["whiteAlgorithm"].toString("white_off");
 		_whiteAlgorithm = RGBW::stringToWhiteAlgorithm(whiteAlgorithm);
@@ -76,7 +76,7 @@ bool DriverSpiWs2814fSPI::init(const QJsonObject& deviceConfig)
 		_ledBuffer.resize(_ledCount * bytesPerLed + SPI_FRAME_END_LATCH_BYTES, 0x00);
 
 		Debug(_log, "WS2814f SPI RGBW mode     : %s", _useRgbw ? "enabled" : "disabled");
-		Debug(_log, "WS2814f SPI swap W & G    : %s", _swapWG ? "enabled" : "disabled");
+		Debug(_log, "WS2814f SPI swap W & B    : %s", _swapWB ? "enabled" : "disabled");
 		Debug(_log, "WS2814f SPI white algorithm: %s", whiteAlgorithm.toStdString().c_str());
 
 		isInitOK = true;
@@ -113,10 +113,10 @@ int DriverSpiWs2814fSPI::write(const std::vector<ColorRgb>& ledValues)
 			// Apply white algorithm for RGBW processing
 			RGBW::Rgb_to_Rgbw(color, &_temp_rgbw, _whiteAlgorithm);
 
-			// Apply W & G swap if enabled (WLED compatibility feature)
-			if (_swapWG)
+			// Apply W & B swap if enabled (swap White and Blue channels)
+			if (_swapWB)
 			{
-				std::swap(_temp_rgbw.white, _temp_rgbw.green);
+				std::swap(_temp_rgbw.white, _temp_rgbw.blue);
 			}
 
 			// WS2814f RGBW uses BRGW color order (Blue-Red-Green-White)

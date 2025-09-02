@@ -520,6 +520,7 @@
   "edt_dev_spec_useEntertainmentAPIV2_title": "Använd Hue Entertainment API V2 (lägger till stöd för färgtonsgradientljusremsor)",
   "edt_dev_spec_useOrbSmoothing_title": "Använd kulautjämning",
   "edt_dev_spec_useRgbwProtocol_title": "Använd RGBW -protokoll",
+  "edt_dev_spec_swapWB_title": "Byt W och B",
   "edt_dev_spec_username_title": "Användarnamn",
   "edt_dev_spec_verbose_title": "Logga alla Hue -kommandon",
   "edt_dev_spec_vid_title": "VID",

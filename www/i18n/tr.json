@@ -520,6 +520,7 @@
   "edt_dev_spec_useEntertainmentAPIV2_title": "Hue Entertainment API V2'yi kullanın (Ton gradyan ışık şeritleri için destek ekler)",
   "edt_dev_spec_useOrbSmoothing_title": "Küre yumuşatma kullanın",
   "edt_dev_spec_useRgbwProtocol_title": "RGBW protokolünü kullan",
+  "edt_dev_spec_swapWB_title": "W ve B'yi değiştir",
   "edt_dev_spec_username_title": "Kullanıcı adı",
   "edt_dev_spec_verbose_title": "Tüm Hue komutlarını günlüğe kaydet",
   "edt_dev_spec_vid_title": "VID",

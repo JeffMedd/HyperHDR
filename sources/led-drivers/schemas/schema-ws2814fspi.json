@@ -36,10 +36,10 @@
 			"default": false,
 			"propertyOrder": 4
 		},
-		"swapWG": {
+		"swapWB": {
 			"type": "boolean",
 			"format": "checkbox",
-			"title": "edt_dev_spec_swapWG_title",
+			"title": "edt_dev_spec_swapWB_title",
 			"default": false,
 			"propertyOrder": 5,
 			"options": {

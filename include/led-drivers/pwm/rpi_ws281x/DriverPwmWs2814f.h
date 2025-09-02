@@ -36,7 +36,7 @@ private:
 	RGBW::WhiteAlgorithm _whiteAlgorithm;
 	ColorRgbw _temp_rgbw;
 	bool _useRgbw;
-	bool _swapWG;
+	bool _swapWB;
 
 	static bool isRegistered;
 };
