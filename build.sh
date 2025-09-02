@@ -225,10 +225,11 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 	fi
 
 	if [[ $DOCKER_IMAGE == *"armv6l"* ]] && [[ $CI_TYPE == "github_action" ]]; then
-		BUILD_OPTION="-DOVERRIDE_ARCHITECTURE=armv6l ${BUILD_OPTION}"		
-	fi
+		BUILD_OPTION="-DOVERRIDE_ARCHITECTURE=armv6l ${BUILD_OPTION}"			fi
 	
-	echo "Build option: ${BUILD_OPTION}, ccache: ${cache_env}"	if [[ "$DOCKER_TAG" == "ArchLinux" ]]; then
+	echo "Build option: ${BUILD_OPTION}, ccache: ${cache_env}"
+
+	if [[ "$DOCKER_TAG" == "ArchLinux" ]]; then
 		echo "Arch Linux detected"
 		cp cmake/linux/arch/* .
 		chmod -R a+rw ${CI_BUILD_DIR}/deploy
