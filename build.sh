@@ -294,9 +294,9 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		chown -R builder:builder /hyperhdr && 
 		chown -R builder:builder /.ccache && 
 		chown -R builder:builder /deploy && 
-		cd /hyperhdr && 
-		su builder -c '${executeCommand}' &&
-		(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&		(su builder -c 'ccache -sv' || true) &&
+		cd /hyperhdr && 		su builder -c '${executeCommand}' &&
+		(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&
+		(su builder -c 'ccache -sv' || true) &&
 		exit 0;
 		exit 1 " || { echo "---> HyperHDR compilation failed! Abort"; exit 5; }
 	else
