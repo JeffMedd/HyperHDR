@@ -104,7 +104,8 @@ Created `validate_build_syntax.sh` with checks for:
 10. **Missing Newline #4**: Fixed concatenated DOCKER_IMAGE_FULL and case statement
 11. **Missing Newline #5**: Fixed concatenated esac and fi statements
 12. **Missing Newline #6**: Fixed concatenated chmod command and else statement ⭐ **Latest**
-13. **Missing Newline #7**: Fixed concatenated INSTALL_DEPS assignment and else clause ⭐ **Latest**
+13. **Missing Newline #7**: Fixed concatenated INSTALL_DEPS assignment and else clause ⭐ **Latest**  
+14. **Missing Newline #8**: Fixed concatenated sed command and fi statement ⭐ **Latest**
 
 ## Result
 - All syntax errors resolved
@@ -113,7 +114,7 @@ Created `validate_build_syntax.sh` with checks for:
 - Validation tools in place to prevent future issues
 
 ## Files Modified
-- `build.sh` - Main build script with comprehensive syntax fixes (13 fixes total)
+- `build.sh` - Main build script with comprehensive syntax fixes (14 fixes total)
 - `validate_build_syntax.sh` - Basic validation tool for syntax checking
 - `comprehensive_syntax_check.sh` - Advanced bash syntax validation tool
 - `comprehensive_syntax_check.ps1` - Advanced PowerShell syntax validation tool
