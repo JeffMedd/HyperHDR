@@ -240,9 +240,9 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		if [ ${USE_CCACHE} = true ]; then
 			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION} -DUSE_PRECOMPILED_HEADERS=OFF/" PKGBUILD
 		else
-			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION}/" PKGBUILD
-		fi
-		chmod -R a+rw ${CI_BUILD_DIR}/.ccache	else
+			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION}/" PKGBUILD		fi
+		chmod -R a+rw ${CI_BUILD_DIR}/.ccache
+	else
 		executeCommand="cd build && ( cmake ${BUILD_OPTION} -DPLATFORM=${PLATFORM} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDEBIAN_NAME_TAG=${DOCKER_TAG} ../ || exit 2 )"
 		executeCommand+=" && ( make -j $(nproc) package || exit 3 )"
 	fi
@@ -250,10 +250,10 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 	# run docker
 	echo "Final Docker configuration:"
 	if [[ "$GITHUB_REPOSITORY" == "awawa-dev/HyperHDR" ]]; then
-		# Use pre-built containers for original repository
-		echo "Using pre-built container for original repository"
+		# Use pre-built containers for original repository		echo "Using pre-built container for original repository"
 		DOCKER_IMAGE_FULL="$REGISTRY_URL:$DOCKER_TAG"
-		INSTALL_DEPS=""	else
+		INSTALL_DEPS=""
+	else
 		# Use public images and install dependencies for forks
 		echo "Using public image with dependency installation for fork"
 		DOCKER_IMAGE_FULL="$REGISTRY_URL"
