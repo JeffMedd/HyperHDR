@@ -1,0 +1,4 @@
+Test file to trigger GitHub Actions build
+Created: 2025-09-02
+Purpose: Verify GitHub Actions workflow execution
+Update: Added ccache to all distribution dependency lists

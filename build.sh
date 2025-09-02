@@ -258,22 +258,17 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		# Use public images and install dependencies for forks
 		echo "Using public image with dependency installation for fork"
 		DOCKER_IMAGE_FULL="$REGISTRY_URL"
-		case "${DOCKER_TAG}" in
-			"bullseye"|"bookworm")
-				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libqt5x11extras5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev"
-				;;
-			"jammy"|"noble"|"oracular")
-				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev"
-				;;
-			"Fedora_41")
-				INSTALL_DEPS="dnf install -y gcc gcc-c++ cmake git pkgconfig qt5-qtbase-devel qt5-qtserialport-devel libusb1-devel python3-devel libXrandr-devel avahi-devel openssl-devel pulseaudio-libs-devel mesa-libGL-devel turbojpeg-devel alsa-lib-devel qt5-qtcharts-devel qt5-qtsvg-devel"
-				;;
-			"ArchLinux")
-				INSTALL_DEPS="pacman -Syu --noconfirm base-devel cmake git pkgconf qt5-base qt5-serialport qt5-svg libusb python libxrandr avahi openssl pulseaudio mesa libjpeg-turbo alsa-lib qt5-charts"
-				;;
-			*)
-				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config"
-				;;		esac
+		case "${DOCKER_TAG}" in			"bullseye"|"bookworm")
+				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libqt5x11extras5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev ccache"
+				;;			"jammy"|"noble"|"oracular")
+				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev ccache"
+				;;			"Fedora_41")
+				INSTALL_DEPS="dnf install -y gcc gcc-c++ cmake git pkgconfig qt5-qtbase-devel qt5-qtserialport-devel libusb1-devel python3-devel libXrandr-devel avahi-devel openssl-devel pulseaudio-libs-devel mesa-libGL-devel turbojpeg-devel alsa-lib-devel qt5-qtcharts-devel qt5-qtsvg-devel ccache"
+				;;			"ArchLinux")
+				INSTALL_DEPS="pacman -Syu --noconfirm base-devel cmake git pkgconf qt5-base qt5-serialport qt5-svg libusb python libxrandr avahi openssl pulseaudio mesa libjpeg-turbo alsa-lib qt5-charts ccache"
+				;;			*)
+				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config ccache"
+				;;esac
 	fi
 		echo "About to run Docker with image: $DOCKER_IMAGE_FULL"
 	echo "Install dependencies command: $INSTALL_DEPS"
