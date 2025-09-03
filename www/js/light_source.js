@@ -847,8 +847,7 @@ $(document).ready(function()
 			$('#btn_submit').attr('disabled', false);
 			$('#btn_submit').attr('disabled', false);
 			$('#btn_submit').attr('disabled', false);
-			
-			// Force dependency re-evaluation when any field changes, particularly for WS2814f dependencies
+					// Force dependency re-evaluation when any field changes, particularly for WS2814f dependencies
 			setTimeout(() => {
 				const specificEditor = conf_editor.getEditor("root.specificOptions");
 				if (specificEditor && specificEditor.editors) {
@@ -860,7 +859,7 @@ $(document).ready(function()
 					});
 					
 					// Additional specific handling for WS2814f swapWB dependency
-					if (ledType === "ws2814fpwm") {
+					if (ledType === "ws2814fpwm" || ledType === "ws2814fspi") {
 						const swapWBEditor = specificEditor.getEditor("swapWB");
 						if (swapWBEditor && swapWBEditor.evaluateDependencies) {
 							swapWBEditor.evaluateDependencies();
@@ -869,9 +868,8 @@ $(document).ready(function()
 				}
 			}, 10);
 		});
-
 		// Enhanced dependency handling for WS2814f RGBW/SwapWB fields
-		if (ledType === "ws2814fpwm") {
+		if (ledType === "ws2814fpwm" || ledType === "ws2814fspi") {
 			setTimeout(() => {
 				const specificEditor = conf_editor.getEditor("root.specificOptions");
 				if (specificEditor) {
