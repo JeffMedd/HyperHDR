@@ -244,7 +244,10 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		chmod -R a+rw ${CI_BUILD_DIR}/.ccache	else
 		executeCommand="umask 022 && cd build && ( cmake ${BUILD_OPTION} -DPLATFORM=${PLATFORM} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDEBIAN_NAME_TAG=${DOCKER_TAG} ../ || exit 2 )"
 		executeCommand+=" && ( make -j $(nproc) package || exit 3 )"
-		executeCommand+=" && echo 'Package generation completed' && ls -la Hyper*.deb Hyper*.rpm 2>/dev/null || echo 'No packages found'"
+		executeCommand+=" && echo 'Package generation completed successfully' && ls -la Hyper*.deb Hyper*.rpm 2>/dev/null || echo 'No packages generated'"
+		if [[ $DOCKER_IMAGE == *"aarch64"* ]] || [[ $DOCKER_IMAGE == *"arm"* ]]; then
+			executeCommand+=" && echo 'ARM build detected - validating packages' && for pkg in Hyper*.deb; do [ -f \"\$pkg\" ] && dpkg --info \"\$pkg\" >/dev/null && echo \"ARM DEB package valid: \$pkg\" || echo \"ARM DEB package invalid: \$pkg\"; done"
+		fi
 	fi
 	
 	# run docker
@@ -307,15 +310,28 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		(su builder -c 'ccache -sv' || true) &&
 		exit 0;
 		exit 1 " || { echo "---> HyperHDR compilation failed! Abort"; exit 5; }
-	else
-		docker run --rm \
+	else		docker run --rm \
 		-v "${CI_BUILD_DIR}/.ccache:/.ccache" \
 		-v "${CI_BUILD_DIR}/deploy:/deploy" \
 		-v "${CI_BUILD_DIR}:/source:ro" \
-		$DOCKER_IMAGE_FULL \		/bin/bash -c "${INSTALL_DEPS} && ${cache_env} && cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr &&
-		cd /hyperhdr && mkdir build && (${executeCommand}) &&
+		$DOCKER_IMAGE_FULL \
+		/bin/bash -c "${INSTALL_DEPS} && ${cache_env} && cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr &&
+		umask 022 && cd /hyperhdr && mkdir build && (${executeCommand}) &&
 		echo 'Checking generated packages...' &&
 		ls -la /hyperhdr/build/Hyper* 2>/dev/null || echo 'No packages found in build directory' &&
+		echo 'Validating package integrity...' &&
+		for pkg in /hyperhdr/build/Hyper*.deb; do 
+			if [ -f \"\$pkg\" ]; then 
+				echo \"Checking DEB package: \$pkg\";
+				dpkg --info \"\$pkg\" >/dev/null 2>&1 && echo \"  ✓ Valid DEB package\" || echo \"  ✗ Invalid DEB package\";
+			fi;
+		done &&
+		for pkg in /hyperhdr/build/Hyper*.rpm; do 
+			if [ -f \"\$pkg\" ]; then 
+				echo \"Checking RPM package: \$pkg\";
+				rpm -qip \"\$pkg\" >/dev/null 2>&1 && echo \"  ✓ Valid RPM package\" || echo \"  ✗ Invalid RPM package\";
+			fi;
+		done &&
 		(cp /hyperhdr/build/bin/h* /deploy/ 2>/dev/null || : ) &&
 		(cp /hyperhdr/build/Hyper* /deploy/ 2>/dev/null || : ) &&
 		(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&
