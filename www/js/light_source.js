@@ -870,6 +870,66 @@ $(document).ready(function()
 			}, 10);
 		});
 
+		// Enhanced dependency handling for WS2814f RGBW/SwapWB fields
+		if (ledType === "ws2814fpwm") {
+			setTimeout(() => {
+				const specificEditor = conf_editor.getEditor("root.specificOptions");
+				if (specificEditor) {
+					const rgbwEditor = specificEditor.getEditor("rgbw");
+					const swapWBEditor = specificEditor.getEditor("swapWB");
+					const whiteAlgorithmEditor = specificEditor.getEditor("whiteAlgorithm");
+					
+					if (rgbwEditor && swapWBEditor) {
+						// Manually set up dependency watcher for swapWB
+						const setupSwapWBDependency = () => {
+							const rgbwValue = rgbwEditor.getValue();
+							const shouldShow = rgbwValue === true;
+							
+							// Force dependency state
+							swapWBEditor.dependenciesFulfilled = shouldShow;
+							
+							// Force container visibility
+							if (swapWBEditor.container) {
+								swapWBEditor.container.style.display = shouldShow ? 'block' : 'none';
+							}
+							
+							console.log("WS2814f dependency update: RGBW=" + rgbwValue + ", SwapWB visible=" + shouldShow);
+						};
+						
+						// Set up watcher for RGBW changes
+						conf_editor.watch('root.specificOptions.rgbw', setupSwapWBDependency);
+						
+						// Initial setup
+						setupSwapWBDependency();
+					}
+					
+					if (rgbwEditor && whiteAlgorithmEditor) {
+						// Manually set up dependency watcher for whiteAlgorithm
+						const setupWhiteAlgorithmDependency = () => {
+							const rgbwValue = rgbwEditor.getValue();
+							const shouldShow = rgbwValue === true;
+							
+							// Force dependency state
+							whiteAlgorithmEditor.dependenciesFulfilled = shouldShow;
+							
+							// Force container visibility
+							if (whiteAlgorithmEditor.container) {
+								whiteAlgorithmEditor.container.style.display = shouldShow ? 'block' : 'none';
+							}
+							
+							console.log("WS2814f dependency update: RGBW=" + rgbwValue + ", WhiteAlgorithm visible=" + shouldShow);
+						};
+						
+						// Set up watcher for RGBW changes
+						conf_editor.watch('root.specificOptions.rgbw', setupWhiteAlgorithmDependency);
+						
+						// Initial setup
+						setupWhiteAlgorithmDependency();
+					}
+				}
+			}, 500); // Longer delay to ensure all editors are fully initialized
+		}
+
 		// led controller sepecific wizards
 		$('#btn_wiz_holder').html("");
 		$('#btn_led_device_wiz').off();
