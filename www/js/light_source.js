@@ -867,8 +867,7 @@ $(document).ready(function()
 					}
 				}
 			}, 10);
-		});
-		// Enhanced dependency handling for WS2814f RGBW/SwapWB fields
+		});		// Enhanced dependency handling for WS2814f RGBW/SwapWB fields
 		if (ledType === "ws2814fpwm" || ledType === "ws2814fspi") {
 			setTimeout(() => {
 				const specificEditor = conf_editor.getEditor("root.specificOptions");
@@ -891,7 +890,21 @@ $(document).ready(function()
 								swapWBEditor.container.style.display = shouldShow ? 'block' : 'none';
 							}
 							
-							console.log("WS2814f dependency update: RGBW=" + rgbwValue + ", SwapWB visible=" + shouldShow);
+							// Additional DOM-level force for PWM variant
+							if (ledType === "ws2814fpwm") {
+								const swapWBElements = document.querySelectorAll('[data-schemapath*="swapWB"]');
+								swapWBElements.forEach(el => {
+									if (shouldShow) {
+										el.style.display = '';
+										el.style.visibility = 'visible';
+										el.style.opacity = '1';
+									} else {
+										el.style.display = 'none';
+									}
+								});
+							}
+							
+							console.log("WS2814f dependency update: RGBW=" + rgbwValue + ", SwapWB visible=" + shouldShow + " (device: " + ledType + ")");
 						};
 						
 						// Set up watcher for RGBW changes
@@ -899,6 +912,17 @@ $(document).ready(function()
 						
 						// Initial setup
 						setupSwapWBDependency();
+						
+						// Additional force evaluation for PWM
+						if (ledType === "ws2814fpwm") {
+							setTimeout(() => {
+								setupSwapWBDependency();
+								// Force re-evaluation of dependencies
+								if (swapWBEditor.evaluateDependencies) {
+									swapWBEditor.evaluateDependencies();
+								}
+							}, 500);
+						}
 					}
 					
 					if (rgbwEditor && whiteAlgorithmEditor) {
