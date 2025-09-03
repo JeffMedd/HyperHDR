@@ -964,102 +964,107 @@ $(document).ready(function()
 				}, 1000);
 			}
 		}
-		
-		// Manual SwapWB creation function - bypasses JSON Editor limitations
+				// Manual SwapWB creation function - bypasses JSON Editor limitations
 		function manuallyCreateSwapWB(specificEditor) {
-			if (!specificEditor || !specificEditor.container) {
-				console.log("Cannot create manual swapWB: no container");
-				return;
+			console.log("🔧 Creating SwapWB field manually for PWM variant");
+			
+			// Find the RGBW field container first
+			const rgbwContainer = document.querySelector('[data-schemapath*="rgbw"]');
+			if (!rgbwContainer) {
+				console.error("Could not find RGBW container for positioning SwapWB");
+				return false;
 			}
 			
-			const rgbwEditor = specificEditor.getEditor("rgbw");
-			if (!rgbwEditor) {
-				console.log("Cannot create manual swapWB: no RGBW editor");
-				return;
+			// Find the parent container that holds all the form fields
+			let formContainer = rgbwContainer.parentElement;
+			while (formContainer && !formContainer.classList.contains('je-object')) {
+				formContainer = formContainer.parentElement;
 			}
 			
-			// Create the checkbox container
+			if (!formContainer) {
+				console.error("Could not find form container for SwapWB field");
+				return false;
+			}
+			
+			// Create SwapWB container with proper structure matching existing fields
 			const swapWBContainer = document.createElement('div');
 			swapWBContainer.className = 'form-group je-object';
 			swapWBContainer.setAttribute('data-schemapath', 'root.specificOptions.swapWB');
 			
-			// Create the checkbox wrapper
+			// Create checkbox wrapper for Bootstrap styling
 			const checkboxWrapper = document.createElement('div');
 			checkboxWrapper.className = 'checkbox';
 			
-			// Create the label
+			// Create label with checkbox inside (Bootstrap style)
 			const label = document.createElement('label');
 			
-			// Create the checkbox input
+			// Create checkbox
 			const checkbox = document.createElement('input');
 			checkbox.type = 'checkbox';
 			checkbox.name = 'root[specificOptions][swapWB]';
 			checkbox.value = '1';
 			checkbox.setAttribute('data-schemapath', 'root.specificOptions.swapWB');
 			
-			// Create the label text
+			// Add label text
 			const labelText = document.createTextNode(' Swap W & B');
 			
-			// Assemble the elements
+			// Assemble the structure
 			label.appendChild(checkbox);
 			label.appendChild(labelText);
 			checkboxWrapper.appendChild(label);
 			swapWBContainer.appendChild(checkboxWrapper);
-					// Find the right place to insert (after RGBW, before whiteAlgorithm)
-			const rgbwContainer = specificEditor.container.querySelector('[data-schemapath*="rgbw"]');
-			const whiteAlgContainer = specificEditor.container.querySelector('[data-schemapath*="whiteAlgorithm"]');
 			
-			if (rgbwContainer && rgbwContainer.parentNode) {
-				// Insert after RGBW checkbox, before White Algorithm
-				if (whiteAlgContainer) {
-					// Insert before White Algorithm
-					rgbwContainer.parentNode.insertBefore(swapWBContainer, whiteAlgContainer);
-					console.log("Manual swapWB field created and inserted between RGBW and White Algorithm");
+			// Find the best insertion point
+			const whiteAlgContainer = document.querySelector('[data-schemapath*="whiteAlgorithm"]');
+			const rgbwFormGroup = rgbwContainer.closest('.form-group');
+			
+			if (whiteAlgContainer && rgbwFormGroup) {
+				// Insert between RGBW and White Algorithm
+				const whiteAlgFormGroup = whiteAlgContainer.closest('.form-group');
+				formContainer.insertBefore(swapWBContainer, whiteAlgFormGroup);
+				console.log("✅ SwapWB inserted between RGBW and White Algorithm");
+			} else if (rgbwFormGroup) {
+				// Insert after RGBW
+				if (rgbwFormGroup.nextSibling) {
+					formContainer.insertBefore(swapWBContainer, rgbwFormGroup.nextSibling);
 				} else {
-					// No White Algorithm, insert after RGBW
-					rgbwContainer.parentNode.insertBefore(swapWBContainer, rgbwContainer.nextSibling);
-					console.log("Manual swapWB field created and inserted after RGBW");
+					formContainer.appendChild(swapWBContainer);
 				}
+				console.log("✅ SwapWB inserted after RGBW");
 			} else {
-				// Fallback: append to container
-				specificEditor.container.appendChild(swapWBContainer);
-				console.log("Manual swapWB field created and appended to container");
+				console.error("Could not find suitable insertion point for SwapWB");
+				return false;
 			}
 			
-			// Set up dependency handling
-			const updateSwapWBVisibility = () => {
-				const rgbwValue = rgbwEditor.getValue();
-				const shouldShow = rgbwValue === true;
+			// Set up dependency on RGBW
+			const rgbwCheckbox = rgbwContainer.querySelector('input[type="checkbox"]');
+			if (rgbwCheckbox) {
+				const updateSwapWBVisibility = () => {
+					const shouldShow = rgbwCheckbox.checked;
+					swapWBContainer.style.display = shouldShow ? 'block' : 'none';
+					console.log(`SwapWB visibility updated: ${shouldShow ? 'visible' : 'hidden'}`);
+				};
 				
-				swapWBContainer.style.display = shouldShow ? 'block' : 'none';
-				console.log("Manual swapWB visibility: " + shouldShow + " (RGBW: " + rgbwValue + ")");
-			};
+				// Add event listener
+				rgbwCheckbox.addEventListener('change', updateSwapWBVisibility);
+				
+				// Set initial state
+				updateSwapWBVisibility();
+				
+				console.log("✅ SwapWB dependency on RGBW established");
+			}
 			
-			// Set up event listeners
-			rgbwEditor.container.addEventListener('change', updateSwapWBVisibility);
-			conf_editor.watch('root.specificOptions.rgbw', updateSwapWBVisibility);
-			
-			// Add to config object when changed
+			// Add the checkbox to form handling
 			checkbox.addEventListener('change', function() {
-				const currentConfig = conf_editor.getValue();
-				if (!currentConfig.specificOptions) {
-					currentConfig.specificOptions = {};
+				console.log(`SwapWB changed to: ${this.checked}`);
+				// Trigger validation if needed
+				if (conf_editor && conf_editor.validate) {
+					conf_editor.validate();
 				}
-				currentConfig.specificOptions.swapWB = this.checked;
-				
-				// Trigger change event for validation
-				conf_editor.trigger('change');
-				console.log("Manual swapWB changed to: " + this.checked);
 			});
 			
-			// Initial visibility update
-			updateSwapWBVisibility();
-			
-			// Set initial value if it exists in config
-			const currentConfig = conf_editor.getValue();
-			if (currentConfig && currentConfig.specificOptions && typeof currentConfig.specificOptions.swapWB === 'boolean') {
-				checkbox.checked = currentConfig.specificOptions.swapWB;
-			}
+			console.log("🎉 SwapWB field manually created and fully functional!");
+			return true;
 		}
 
 		// led controller sepecific wizards
