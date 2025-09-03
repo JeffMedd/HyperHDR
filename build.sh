@@ -264,9 +264,8 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 				;;
 			"jammy"|"noble"|"oracular")
 				INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev ccache"
-				;;
-			"Fedora_41")
-				INSTALL_DEPS="dnf install -y gcc gcc-c++ cmake git pkgconfig qt5-qtbase-devel qt5-qtserialport-devel libusb1-devel python3-devel libXrandr-devel avahi-devel openssl-devel pulseaudio-libs-devel mesa-libGL-devel turbojpeg-devel alsa-lib-devel qt5-qtcharts-devel qt5-qtsvg-devel ccache"
+				;;			"Fedora_41")
+				INSTALL_DEPS="dnf install -y gcc gcc-c++ cmake git pkgconfig qt5-qtbase-devel qt5-qtserialport-devel libusb1-devel python3-devel libXrandr-devel avahi-devel openssl-devel pulseaudio-libs-devel mesa-libGL-devel turbojpeg-devel alsa-lib-devel qt5-qtcharts-devel qt5-qtsvg-devel ccache rpm-build"
 				;;
 			"ArchLinux")
 				INSTALL_DEPS="pacman -Syu --noconfirm base-devel cmake git pkgconf qt5-base qt5-serialport qt5-svg libusb python libxrandr avahi openssl pulseaudio mesa libjpeg-turbo alsa-lib qt5-charts ccache"
