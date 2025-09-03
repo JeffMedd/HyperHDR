@@ -5,3 +5,4 @@ Update: Added ccache to all distribution dependency lists
 Final Fix: ArchLinux GLIBC regex pattern properly quoted - 2025-09-03
 Corrected Fix: Fixed escaping for su single quotes context - 2025-09-03
 Ultimate Fix: Reduced variable escaping for docker bash context - 2025-09-03
+09/03/2025 09:38:49: Added rpm-build to Fedora dependencies
