@@ -789,9 +789,7 @@ $(document).ready(function()
 		{
 			if (key != "type" && key in generalOptions.properties) values_general[key] = window.serverConfig.device[key];
 		};
-		conf_editor.getEditor("root.generalOptions").setValue(values_general);
-
-		if (isCurrentDevice)
+		conf_editor.getEditor("root.generalOptions").setValue(values_general);		if (isCurrentDevice)
 		{
 			var specificOptions_val = conf_editor.getEditor("root.specificOptions").getValue();
 			for (var key in specificOptions_val)
@@ -799,6 +797,27 @@ $(document).ready(function()
 				values_specific[key] = (key in window.serverConfig.device) ? window.serverConfig.device[key] : specificOptions_val[key];
 			};
 			conf_editor.getEditor("root.specificOptions").setValue(values_specific);
+			
+			// Force dependency re-evaluation for conditional properties (especially for WS2814f swapWB)
+			setTimeout(() => {
+				const specificEditor = conf_editor.getEditor("root.specificOptions");
+				if (specificEditor && specificEditor.editors) {
+					Object.keys(specificEditor.editors).forEach(key => {
+						const editor = specificEditor.editors[key];
+						if (editor && editor.evaluateDependencies) {
+							editor.evaluateDependencies();
+						}
+					});
+					
+					// Additional specific handling for WS2814f swapWB dependency
+					if (ledType === "ws2814fpwm") {
+						const swapWBEditor = specificEditor.getEditor("swapWB");
+						if (swapWBEditor && swapWBEditor.evaluateDependencies) {
+							swapWBEditor.evaluateDependencies();
+						}
+					}
+				}
+			}, 100);
 		}
 		else
 			conf_editor.getEditor('root.generalOptions.refreshTime').setValue(0);
@@ -823,13 +842,32 @@ $(document).ready(function()
 		else
 		{
 			$('#btn_submit_controller').attr('disabled', false);
-		}
-
-		conf_editor.on('change', function()
+		}		conf_editor.on('change', function()
 		{
 			$('#btn_submit').attr('disabled', false);
 			$('#btn_submit').attr('disabled', false);
 			$('#btn_submit').attr('disabled', false);
+			
+			// Force dependency re-evaluation when any field changes, particularly for WS2814f dependencies
+			setTimeout(() => {
+				const specificEditor = conf_editor.getEditor("root.specificOptions");
+				if (specificEditor && specificEditor.editors) {
+					Object.keys(specificEditor.editors).forEach(key => {
+						const editor = specificEditor.editors[key];
+						if (editor && editor.evaluateDependencies) {
+							editor.evaluateDependencies();
+						}
+					});
+					
+					// Additional specific handling for WS2814f swapWB dependency
+					if (ledType === "ws2814fpwm") {
+						const swapWBEditor = specificEditor.getEditor("swapWB");
+						if (swapWBEditor && swapWBEditor.evaluateDependencies) {
+							swapWBEditor.evaluateDependencies();
+						}
+					}
+				}
+			}, 10);
 		});
 
 		// led controller sepecific wizards
