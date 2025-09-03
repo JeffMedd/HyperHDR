@@ -241,10 +241,10 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		else
 			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION}/" PKGBUILD
 		fi
-		chmod -R a+rw ${CI_BUILD_DIR}/.ccache
-	else
-		executeCommand="cd build && ( cmake ${BUILD_OPTION} -DPLATFORM=${PLATFORM} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDEBIAN_NAME_TAG=${DOCKER_TAG} ../ || exit 2 )"
+		chmod -R a+rw ${CI_BUILD_DIR}/.ccache	else
+		executeCommand="umask 022 && cd build && ( cmake ${BUILD_OPTION} -DPLATFORM=${PLATFORM} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDEBIAN_NAME_TAG=${DOCKER_TAG} ../ || exit 2 )"
 		executeCommand+=" && ( make -j $(nproc) package || exit 3 )"
+		executeCommand+=" && echo 'Package generation completed' && ls -la Hyper*.deb Hyper*.rpm 2>/dev/null || echo 'No packages found'"
 	fi
 	
 	# run docker
@@ -312,9 +312,10 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		-v "${CI_BUILD_DIR}/.ccache:/.ccache" \
 		-v "${CI_BUILD_DIR}/deploy:/deploy" \
 		-v "${CI_BUILD_DIR}:/source:ro" \
-		$DOCKER_IMAGE_FULL \
-		/bin/bash -c "${INSTALL_DEPS} && ${cache_env} && cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr &&
+		$DOCKER_IMAGE_FULL \		/bin/bash -c "${INSTALL_DEPS} && ${cache_env} && cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr &&
 		cd /hyperhdr && mkdir build && (${executeCommand}) &&
+		echo 'Checking generated packages...' &&
+		ls -la /hyperhdr/build/Hyper* 2>/dev/null || echo 'No packages found in build directory' &&
 		(cp /hyperhdr/build/bin/h* /deploy/ 2>/dev/null || : ) &&
 		(cp /hyperhdr/build/Hyper* /deploy/ 2>/dev/null || : ) &&
 		(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&
