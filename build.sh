@@ -237,11 +237,11 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		echo ${executeCommand}
 		sed -i "s/{VERSION}/${versionFile}/" PKGBUILD
 		if [ ${USE_CCACHE} = true ]; then
-			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION} -DUSE_PRECOMPILED_HEADERS=OFF/" PKGBUILD
-		else
+			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION} -DUSE_PRECOMPILED_HEADERS=OFF/" PKGBUILD		else
 			sed -i "s/{BUILD_OPTION}/${BUILD_OPTION}/" PKGBUILD
 		fi
-		chmod -R a+rw ${CI_BUILD_DIR}/.ccache	else
+		chmod -R a+rw ${CI_BUILD_DIR}/.ccache
+	else
 		executeCommand="umask 022 && cd build && ( cmake ${BUILD_OPTION} -DPLATFORM=${PLATFORM} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDEBIAN_NAME_TAG=${DOCKER_TAG} ../ || exit 2 )"
 		executeCommand+=" && ( make -j $(nproc) package || exit 3 )"
 		executeCommand+=" && echo 'Package generation completed successfully' && ls -la Hyper*.deb Hyper*.rpm 2>/dev/null || echo 'No packages generated'"
