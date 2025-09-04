@@ -35,7 +35,7 @@ E: The package lists or status file could not be parsed or opened.
 # OLD: Problematic xz compression
 SET ( CPACK_DEBIAN_COMPRESSION_TYPE "xz" )
 
-# NEW: Compatible gzip compression  
+# NEW: Compatible gzip compression
 SET ( CPACK_DEBIAN_COMPRESSION_TYPE "gzip" )
 
 # OLD: Complex component installation

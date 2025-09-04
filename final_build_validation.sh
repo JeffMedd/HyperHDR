@@ -70,7 +70,7 @@ echo
 echo "=== Validation Summary ==="
 echo "✅ All critical build.sh syntax issues have been resolved"
 echo "✅ Docker registry detection implemented"
-echo "✅ Dependency installation for all distributions configured" 
+echo "✅ Dependency installation for all distributions configured"
 echo "✅ Arch Linux special handling implemented"
 echo "✅ Build system ready for GitHub Actions"
 echo

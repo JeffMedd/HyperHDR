@@ -41,13 +41,13 @@ if [ -n "$js_file" ]; then
     else
         echo "❌ Manual dependency code NOT FOUND"
     fi
-    
+
     if grep -q "PWM variant" "$js_file" 2>/dev/null; then
         echo "✅ PWM variant code FOUND"
     else
         echo "❌ PWM variant code NOT FOUND"
     fi
-    
+
     if grep -q "DOM-level forcing for PWM" "$js_file" 2>/dev/null; then
         echo "✅ DOM-level forcing code FOUND"
     else

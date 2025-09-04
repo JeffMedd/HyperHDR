@@ -11,11 +11,11 @@ All 5 original UI interface issues for the WS2814f PWM controller in HyperHDR ha
 ### 1. ✅ **Duplicate RGB Byte Order Fields** - FIXED
 - **Problem**: Duplicate `colorOrder` fields appearing in both general and specific options
 - **Solution**: Removed duplicate field from schemas
-- **Files Modified**: 
+- **Files Modified**:
   - `schema-ws2814fpwm.json`
   - `schema-ws2814fspi.json`
 
-### 2. ✅ **Non-Human Readable Field Titles** - FIXED  
+### 2. ✅ **Non-Human Readable Field Titles** - FIXED
 - **Problem**: Cryptic translation keys like `edt_dev_spec_rgbw_title` showing instead of proper titles
 - **Solution**: Added missing translation keys to language files
 - **Files Modified**: `www/i18n/en.json` (and other language files)
@@ -105,7 +105,7 @@ All fixes have been:
 ### Files Modified:
 ```
 sources/led-drivers/schemas/schema-ws2814fpwm.json
-sources/led-drivers/schemas/schema-ws2814fspi.json  
+sources/led-drivers/schemas/schema-ws2814fspi.json
 sources/led-drivers/pwm/rpi_ws281x/DriverPwmWs2814f.cpp
 sources/led-drivers/spi/DriverSpiWs2814fSPI.cpp
 www/i18n/en.json
@@ -119,7 +119,7 @@ www/js/light_source.js
 ### ✅ **All Issues Resolved**
 - No duplicate fields
 - Human-readable titles
-- Proper dropdown options  
+- Proper dropdown options
 - Working dependencies
 - SwapWB available in PWM controller
 
@@ -155,7 +155,7 @@ www/js/light_source.js
 
 ### For WS2814f RGBW Setup:
 1. Navigate to Configuration > LED Hardware
-2. Select "WS2814f PWM" or "WS2814f SPI" 
+2. Select "WS2814f PWM" or "WS2814f SPI"
 3. Enable "Use RGBW protocol" checkbox
 4. Configure "White Algorithm" as needed
 5. Toggle "Swap W & B" if hardware requires it
@@ -173,7 +173,7 @@ www/js/light_source.js
 The WS2814f UI interface issues have been **completely resolved** with a comprehensive solution that addresses both the immediate symptoms and underlying root causes. The implementation provides:
 
 - **Immediate Fix**: All UI issues resolved and working
-- **Robust Solution**: Handles edge cases and framework limitations  
+- **Robust Solution**: Handles edge cases and framework limitations
 - **Future-Proof**: Maintains compatibility with framework updates
 - **Production-Ready**: Thoroughly tested and deployed
 

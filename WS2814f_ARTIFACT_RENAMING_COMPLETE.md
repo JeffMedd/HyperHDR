@@ -31,7 +31,7 @@ SET ( CPACK_PACKAGE_FILE_NAME "HyperHDR-${HYPERHDR_VERSION_MAJOR}.${HYPERHDR_VER
 
 ### ✅ **Completed**
 1. All WS2814f UI fixes implemented and tested
-2. Build system and dependencies fixed  
+2. Build system and dependencies fixed
 3. Artifacts and packages renamed to include WS2814f-fixes identifier
 4. GitHub Actions build triggered with commit `cea6b43`
 

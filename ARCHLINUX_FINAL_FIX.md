@@ -27,7 +27,7 @@ executeCommand="GLIBC_VER=\\\$(ldd --version | head -1 | grep -o \\\"[0-9]\\\\+\
 
 ### Escaping Chain:
 1. **bash variable assignment**: `executeCommand="..."`
-2. **docker bash -c**: `docker run ... /bin/bash -c "${INSTALL_DEPS} && ... && su builder -c '${executeCommand}'"`  
+2. **docker bash -c**: `docker run ... /bin/bash -c "${INSTALL_DEPS} && ... && su builder -c '${executeCommand}'"`
 3. **su command**: `su builder -c '...'`
 4. **final bash execution**: The actual grep command
 

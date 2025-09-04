@@ -73,7 +73,7 @@ grep -o \"[0-9]\\+\\.[0-9]\\+\"
 
 ### Working Distributions
 - ✅ Debian (bullseye, bookworm)
-- ✅ Ubuntu (jammy, noble, oracular)  
+- ✅ Ubuntu (jammy, noble, oracular)
 - ✅ Fedora 41
 - ✅ ArchLinux
 
@@ -139,7 +139,7 @@ GITHUB_REPOSITORY=fork/HyperHDR ./build.sh -d Ubuntu_noble -a x86_64
 ## Success Metrics
 
 - ✅ All bash syntax errors resolved
-- ✅ ArchLinux builds complete successfully  
+- ✅ ArchLinux builds complete successfully
 - ✅ Fork repositories can build without private registry access
 - ✅ All Linux distributions compile and package correctly
 - ✅ ccache optimization works across all builds

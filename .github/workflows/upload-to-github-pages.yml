@@ -2,7 +2,7 @@ name: HyperHDR Package Build (Github Pages Repo)
 
 on:
   push:
-    tags:        
+    tags:
       - '*'
 
 env:
@@ -22,7 +22,7 @@ jobs:
         niceName: [ Debian ]
         linuxVersion: [ bullseye, bookworm ]
         dockerImage: [ x86_64, arm-32bit-armv6l-native, arm-64bit-aarch64-native ]
-        include:        
+        include:
           - runner: ubuntu-24.04
             dockerImage: x86_64
             dockerName: Debian (amd64)
@@ -37,7 +37,7 @@ jobs:
             dockerImage: arm-64bit-aarch64-native
             dockerName: Debian (arm64)
             arch: arm64
-            platform: rpi   
+            platform: rpi
           - runner: ubuntu-24.04
             dockerImage: x86_64
             linuxVersion: ArchLinux
@@ -58,7 +58,7 @@ jobs:
             dockerName: Ubuntu 24.04 LTS (x86_64)
             arch: amd64
             platform: linux
-            niceName: Ubuntu 24.04 LTS           
+            niceName: Ubuntu 24.04 LTS
           - runner: ubuntu-24.04
             dockerImage: x86_64
             linuxVersion: oracular
@@ -80,11 +80,11 @@ jobs:
         if: matrix.runner == 'ubuntu-24.04-arm'
         run: |
           (sudo systemctl start docker) || (echo "Retrying docker" && sleep 5 && sudo systemctl start docker && sleep 5)
-    
+
       # checkout
       - uses: actions/checkout@v4.2.2
         with:
-          submodules: true      
+          submodules: true
 
       # generate cache id
       - name: Prepare ccache timestamp
@@ -117,7 +117,7 @@ jobs:
         run: |
           ./build.sh
 
-      # deploy the package      
+      # deploy the package
       - name: Get destination path
         run: |
           echo "REPO_DIR=repo/pool/${{ matrix.linuxVersion }}" >> $GITHUB_ENV
@@ -126,15 +126,15 @@ jobs:
         run: |
           mkdir -p ${{ env.REPO_DIR }}
           mkdir -p repo/others
-          mv deploy/Hyper*.deb ${{ env.REPO_DIR }} ||: 
-          mv deploy/Hyper*.rpm repo/others ||: 
-          mv deploy/Hyper*.zst repo/others ||: 
-          rm -r repo/pool/ArchLinux ||: 
+          mv deploy/Hyper*.deb ${{ env.REPO_DIR }} ||:
+          mv deploy/Hyper*.rpm repo/others ||:
+          mv deploy/Hyper*.zst repo/others ||:
+          rm -r repo/pool/ArchLinux ||:
 
-      - name: Upload artifacts from commit        
+      - name: Upload artifacts from commit
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: release-artifact-${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}  
+          name: release-artifact-${{ matrix.linuxVersion }}-${{ matrix.dockerImage }}
           path: repo  # Upload:
   #   name: Upload to Github Pages
   #   runs-on: ubuntu-22.04
@@ -150,7 +150,7 @@ jobs:
   #       with:
   #         path: repo
   #         pattern: release-artifact-*
-  #         merge-multiple: true    
+  #         merge-multiple: true
   #     - name: Display structure of artifacts
   #       run: ls -R repo
   #     - name: Deploy the packages

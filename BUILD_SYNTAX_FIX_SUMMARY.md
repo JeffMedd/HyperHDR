@@ -11,7 +11,7 @@ This document summarizes all the syntax fixes applied to `build.sh` to resolve t
 # Before (broken):
 ;;			"jammy"|"noble"|"oracular")
 
-# After (fixed):  
+# After (fixed):
 ;;
 			"jammy"|"noble"|"oracular")
 ```
@@ -26,7 +26,7 @@ This document summarizes all the syntax fixes applied to `build.sh` to resolve t
 BUILD_OPTION="-DOVERRIDE_ARCHITECTURE=armv6l ${BUILD_OPTION}"			fi
 
 # After (fixed):
-BUILD_OPTION="-DOVERRIDE_ARCHITECTURE=armv6l ${BUILD_OPTION}"		
+BUILD_OPTION="-DOVERRIDE_ARCHITECTURE=armv6l ${BUILD_OPTION}"
 	fi
 ```
 
@@ -40,7 +40,7 @@ BUILD_OPTION="-DOVERRIDE_ARCHITECTURE=armv6l ${BUILD_OPTION}"
 cd /hyperhdr && 		su builder -c '${executeCommand}' &&
 
 # After (fixed):
-cd /hyperhdr && 
+cd /hyperhdr &&
 		su builder -c '${executeCommand}' &&
 ```
 
@@ -55,7 +55,7 @@ cd /hyperhdr &&
 
 # After (fixed):
 	fi
-	
+
 	# run docker
 	echo "Final Docker configuration:"
 ```
@@ -93,18 +93,18 @@ Created `validate_build_syntax.sh` with checks for:
 ## Complete Fix Timeline
 
 1. **Docker Registry Access**: Fixed repository detection and public image fallback
-2. **ccache Dependencies**: Added to all Linux distributions  
+2. **ccache Dependencies**: Added to all Linux distributions
 3. **Arch Linux Non-root User**: Added builder user for makepkg security
 4. **Regex Escaping**: Fixed complex sed pattern in Arch Linux builds
 5. **Missing Newline #1**: Fixed concatenated echo and if statements
 6. **Docker Command Structure**: Fixed incomplete command syntax in else branch
-7. **Missing Newline #2**: Fixed concatenated Docker command and else clause  
+7. **Missing Newline #2**: Fixed concatenated Docker command and else clause
 8. **Missing Newline #3**: Fixed concatenated commands in Arch Linux Docker section
 9. **Comprehensive Cleanup**: Fixed all remaining syntax issues systematically
 10. **Missing Newline #4**: Fixed concatenated DOCKER_IMAGE_FULL and case statement
 11. **Missing Newline #5**: Fixed concatenated esac and fi statements
 12. **Missing Newline #6**: Fixed concatenated chmod command and else statement ⭐ **Latest**
-13. **Missing Newline #7**: Fixed concatenated INSTALL_DEPS assignment and else clause ⭐ **Latest**  
+13. **Missing Newline #7**: Fixed concatenated INSTALL_DEPS assignment and else clause ⭐ **Latest**
 14. **Missing Newline #8**: Fixed concatenated sed command and fi statement ⭐ **Latest**
 15. **Missing Newline #9**: Fixed concatenated if statement and sed command ⭐ **Latest**
 

@@ -83,7 +83,7 @@ printf "\n"
 
 if [ ${BUILD_ARCHIVES} = true ]; then
 	echo "Build the package archive"
-	ARCHIVE_OPTION=" -DBUILD_ARCHIVES=ON"	
+	ARCHIVE_OPTION=" -DBUILD_ARCHIVES=ON"
 else
 	echo "Do not build the package archive"
 	ARCHIVE_OPTION=" -DBUILD_ARCHIVES=OFF"
@@ -91,7 +91,7 @@ fi
 
 if [ ${USE_STANDARD_INSTALLER_NAME} = true ]; then
 	echo "Use standard naming"
-	ARCHIVE_OPTION=" ${ARCHIVE_OPTION} -DUSE_STANDARD_INSTALLER_NAME=ON"	
+	ARCHIVE_OPTION=" ${ARCHIVE_OPTION} -DUSE_STANDARD_INSTALLER_NAME=ON"
 else
 	echo "Do not use standard naming"
 	ARCHIVE_OPTION=" ${ARCHIVE_OPTION} -DUSE_STANDARD_INSTALLER_NAME=OFF"
@@ -111,7 +111,7 @@ if [[ "$CI_NAME" == 'osx' || "$CI_NAME" == 'darwin' ]]; then
 	echo "Start: osx or darwin"
 
 	if [ ${USE_CCACHE} = true ]; then
-		echo "Using ccache"		
+		echo "Using ccache"
 		if [[ $(uname -m) == 'arm64' ]]; then
 			BUILD_OPTION=""
 		else
@@ -137,7 +137,7 @@ if [[ "$CI_NAME" == 'osx' || "$CI_NAME" == 'darwin' ]]; then
 	exit 1 || { echo "---> HyperHDR compilation failed! Abort"; exit 5; }
 
 elif [[ $CI_NAME == *"mingw64_nt"* || "$CI_NAME" == 'windows_nt' ]]; then
-	echo "Start: windows"	
+	echo "Start: windows"
 	echo "Number of cores: $NUMBER_OF_PROCESSORS"
 
 	if [ ${USE_CCACHE} = true ]; then
@@ -170,7 +170,7 @@ elif [[ $CI_NAME == *"mingw64_nt"* || "$CI_NAME" == 'windows_nt' ]]; then
 
 elif [[ "$CI_NAME" == 'linux' ]]; then
 	echo "Compile Hyperhdr with DOCKER_IMAGE = ${DOCKER_IMAGE}, DOCKER_TAG = ${DOCKER_TAG} and friendly name DOCKER_NAME = ${DOCKER_NAME}"
-	
+
 	# Debug: Show repository information
 	echo "GITHUB_REPOSITORY = ${GITHUB_REPOSITORY}"
 	echo "Checking if this is the original awawa-dev/HyperHDR repository..."
@@ -208,7 +208,7 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 				;;
 		esac
 	fi
-	
+
 	# take ownership of deploy dir
 	mkdir -p ${CI_BUILD_DIR}/deploy
 	mkdir -p .ccache
@@ -219,14 +219,14 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		cache_env="export CCACHE_DIR=/.ccache && ccache -z"
 		ls -a .ccache
 	else
-		echo "Not using ccache"		
+		echo "Not using ccache"
 		BUILD_OPTION="-DUSE_CCACHE_CACHING=OFF ${ARCHIVE_OPTION}"
 		cache_env="true"
 	fi
 	if [[ $DOCKER_IMAGE == *"armv6l"* ]] && [[ $CI_TYPE == "github_action" ]]; then
-		BUILD_OPTION="-DOVERRIDE_ARCHITECTURE=armv6l ${BUILD_OPTION}"		
+		BUILD_OPTION="-DOVERRIDE_ARCHITECTURE=armv6l ${BUILD_OPTION}"
 	fi
-	
+
 	echo "Build option: ${BUILD_OPTION}, ccache: ${cache_env}"
 	if [[ "$DOCKER_TAG" == "ArchLinux" ]]; then
 		echo "Arch Linux detected"
@@ -249,7 +249,7 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 			executeCommand+=" && echo 'ARM build detected - validating packages' && for pkg in Hyper*.deb; do [ -f \"\$pkg\" ] && dpkg --info \"\$pkg\" >/dev/null && echo \"ARM DEB package valid: \$pkg\" || echo \"ARM DEB package invalid: \$pkg\"; done"
 		fi
 	fi
-	
+
 	# run docker
 	echo "Final Docker configuration:"
 	if [[ "$GITHUB_REPOSITORY" == "awawa-dev/HyperHDR" ]]; then
@@ -277,9 +277,9 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 				;;
 		esac
 	fi
-	
+
 	echo "About to run Docker with image: $DOCKER_IMAGE_FULL"	echo "Install dependencies command: $INSTALL_DEPS"
-	
+
 	# Final safety check: ensure we're not accidentally trying to use private registry in a fork
 	if [[ "$GITHUB_REPOSITORY" != "awawa-dev/HyperHDR" ]] && [[ "$DOCKER_IMAGE_FULL" == *"ghcr.io/awawa-dev"* ]]; then
 		echo "ERROR: Detected attempt to use private registry in forked repository!"
@@ -287,7 +287,7 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		DOCKER_IMAGE_FULL="ubuntu:latest"
 		INSTALL_DEPS="apt-get update && apt-get install -y build-essential cmake git pkg-config libqt5serialport5-dev qtbase5-dev libqt5sql5-sqlite libqt5svg5-dev libusb-1.0-0-dev python3-dev libxrandr-dev libxrender-dev libavahi-client-dev libssl-dev libpulse-dev libgl1-mesa-dev libturbojpeg0-dev libasound2-dev libqt5charts5-dev ccache"
 	fi
-	
+
 	# Handle Arch Linux special case (needs non-root user for makepkg)
 	if [[ "$DOCKER_TAG" == "ArchLinux" ]]; then
 		echo "Arch Linux build - creating non-root user for makepkg"
@@ -296,15 +296,15 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		-v "${CI_BUILD_DIR}/deploy:/deploy" \
 		-v "${CI_BUILD_DIR}:/source:ro" \
 		$DOCKER_IMAGE_FULL \
-		/bin/bash -c "${INSTALL_DEPS} && 
-		useradd -m -s /bin/bash builder && 
-		echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers && 
-		${cache_env} && 
-		cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr && 
-		chown -R builder:builder /hyperhdr && 
-		chown -R builder:builder /.ccache && 
-		chown -R builder:builder /deploy && 
-		cd /hyperhdr && 
+		/bin/bash -c "${INSTALL_DEPS} &&
+		useradd -m -s /bin/bash builder &&
+		echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
+		${cache_env} &&
+		cd / && mkdir -p hyperhdr && cp -rf /source/. /hyperhdr &&
+		chown -R builder:builder /hyperhdr &&
+		chown -R builder:builder /.ccache &&
+		chown -R builder:builder /deploy &&
+		cd /hyperhdr &&
 		su builder -c '${executeCommand}' &&
 		(cp /hyperhdr/Hyper*.zst /deploy/ 2>/dev/null || : ) &&
 		(su builder -c 'ccache -sv' || true) &&
@@ -320,14 +320,14 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		echo 'Checking generated packages...' &&
 		ls -la /hyperhdr/build/Hyper* 2>/dev/null || echo 'No packages found in build directory' &&
 		echo 'Validating package integrity...' &&
-		for pkg in /hyperhdr/build/Hyper*.deb; do 
-			if [ -f \"\$pkg\" ]; then 
+		for pkg in /hyperhdr/build/Hyper*.deb; do
+			if [ -f \"\$pkg\" ]; then
 				echo \"Checking DEB package: \$pkg\";
 				dpkg --info \"\$pkg\" >/dev/null 2>&1 && echo \"  ✓ Valid DEB package\" || echo \"  ✗ Invalid DEB package\";
 			fi;
 		done &&
-		for pkg in /hyperhdr/build/Hyper*.rpm; do 
-			if [ -f \"\$pkg\" ]; then 
+		for pkg in /hyperhdr/build/Hyper*.rpm; do
+			if [ -f \"\$pkg\" ]; then
 				echo \"Checking RPM package: \$pkg\";
 				rpm -qip \"\$pkg\" >/dev/null 2>&1 && echo \"  ✓ Valid RPM package\" || echo \"  ✗ Invalid RPM package\";
 			fi;
@@ -339,7 +339,7 @@ elif [[ "$CI_NAME" == 'linux' ]]; then
 		exit 0;
 		exit 1 " || { echo "---> HyperHDR compilation failed! Abort"; exit 5; }
 	fi
-	
+
 	# overwrite file owner to current user
 	sudo chown -fR $(stat -c "%U:%G" ${CI_BUILD_DIR}/deploy) ${CI_BUILD_DIR}/deploy
 fi

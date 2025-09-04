@@ -18,7 +18,7 @@ jobs:
   Linux:
     name: ${{ matrix.dockerName }}
     runs-on: ${{ matrix.runner }}
-    
+
     strategy:
       matrix:
         include:
@@ -155,10 +155,10 @@ jobs:
   macOS:
     name: ${{ matrix.JOB_NAME }}
     runs-on: ${{ matrix.JOB_RUNNER }}
-    
+
     strategy:
       matrix:
-        include:        
+        include:
           - JOB_RUNNER: macos-14
             JOB_NAME: macOS 14 (arm64 = M1/M2/M3/M4)
             QT_VERSION: 6
@@ -203,7 +203,7 @@ jobs:
       - name: Install deps
         shell: bash
         run: brew install -q qt@${{ matrix.QT_VERSION }} xz ccache zstd webp jpeg-turbo flatbuffers pkg-config || true
-        
+
       # Set env
       - name: Set QT5 env
         if: ( matrix.QT_VERSION == 5 )
@@ -211,7 +211,7 @@ jobs:
         run: |
             export Qt5_DIR=`brew --prefix qt@5`;
             echo "Qt5_DIR=$Qt5_DIR" >> $GITHUB_ENV
-            
+
         # Build process
       - name: Build packages
         env:
@@ -227,7 +227,7 @@ jobs:
         if: startsWith(github.event.ref, 'refs/tags') && github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4.6.2
         with:
-            name: release-artifact-${{ matrix.JOB_RUNNER }}      
+            name: release-artifact-${{ matrix.JOB_RUNNER }}
             path: build/Hyper*.dmg
 
       # Upload artifacts from commit
@@ -263,13 +263,13 @@ jobs:
 
       # temporary workaround for aqt: Python 3.13 instead of preinstalled default older version
       - name: Python 3.13 for aqtinstall
-        uses: actions/setup-python@v5      
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
 
       - name: Install QT
         if: steps.cache-qt-windows.outputs.cache-hit != 'true'
-        run: |          
+        run: |
           pip install aqtinstall
           aqt install-qt -O ${{ runner.workspace }}/Qt windows desktop ${{ env.QT_VERSION }} win64_msvc2019_64 -m qtserialport
 
@@ -317,9 +317,9 @@ jobs:
       - name: Set up x64 build architecture environment
         shell: cmd
         run: call "${{env.VCINSTALLDIR}}\Auxiliary\Build\vcvars64.bat"
-          
+
       # Build packages
-      - name: Build packages        
+      - name: Build packages
         env:
           PLATFORM: windows
           CMAKE_PREFIX_PATH: "${{ runner.workspace }}/Qt/${{ env.QT_VERSION }}/msvc2019_64/lib/cmake/"
@@ -335,7 +335,7 @@ jobs:
         with:
           name: release-artifact-windows
           path: build/Hyper*
-          
+
       # Upload artifacts from commit
       - name: Upload artifacts from commit
         if: (startsWith(github.event.ref, 'refs/tags') != true) && github.event_name != 'pull_request'
@@ -409,7 +409,7 @@ jobs:
         with:
           path: artifacts
           pattern: release-artifact-*
-          merge-multiple: true          
+          merge-multiple: true
 
       # create draft release and upload artifacts
       - name: Create draft release

@@ -44,7 +44,7 @@ su builder -c 'GLIBC_VER=$(ldd --version | head -1 | grep -o "[0-9]\+\.[0-9]\+")
 
 This properly:
 - Executes `ldd --version` to get GLIBC info
-- Extracts version using quoted regex pattern  
+- Extracts version using quoted regex pattern
 - Replaces placeholder in PKGBUILD
 - Runs makepkg to build the package
 

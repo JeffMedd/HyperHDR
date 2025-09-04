@@ -14,7 +14,7 @@ E: The package lists or status file could not be parsed or opened.
 ## 🎯 **Root Causes**
 
 1. **Package Generation Race Conditions**: Packages were being copied before CPack finished generating them completely
-2. **File Permission Issues**: Restrictive umask settings corrupted package files during generation  
+2. **File Permission Issues**: Restrictive umask settings corrupted package files during generation
 3. **ARM Cross-Compilation Issues**: aarch64 builds have specific challenges with package metadata generation
 4. **Missing Validation**: No verification that packages were valid before copying them
 
@@ -24,8 +24,8 @@ E: The package lists or status file could not be parsed or opened.
 ```bash
 # Added comprehensive validation before copying packages
 echo 'Validating package integrity...' &&
-for pkg in /hyperhdr/build/Hyper*.deb; do 
-    if [ -f "$pkg" ]; then 
+for pkg in /hyperhdr/build/Hyper*.deb; do
+    if [ -f "$pkg" ]; then
         echo "Checking DEB package: $pkg";
         dpkg --info "$pkg" >/dev/null 2>&1 && echo "  ✓ Valid DEB package" || echo "  ✗ Invalid DEB package";
     fi;
@@ -66,10 +66,10 @@ To test that the corruption is resolved:
    ```bash
    # Check package integrity
    dpkg --info HyperHDR-*.deb
-   
-   # Examine package structure  
+
+   # Examine package structure
    ar tv HyperHDR-*.deb
-   
+
    # Extract and inspect
    dpkg-deb -e HyperHDR-*.deb /tmp/control
    ls -la /tmp/control/

@@ -1,5 +1,5 @@
 # WS2814f RGBW Protocol Implementatio  "swapWB": {
-    "type": "boolean", 
+    "type": "boolean",
     "title": "edt_dev_spec_swapWB_title",
     "default": false,
     "dependencies": { "rgbw": true }

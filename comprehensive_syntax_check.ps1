@@ -17,19 +17,19 @@ Write-Host "`nChecking for concatenated statements..." -ForegroundColor Yellow
 for ($i = 0; $i -lt $content.Length; $i++) {
     $line = $content[$i]
     $lineNum = $i + 1
-    
+
     # Check for concatenated control structures
     if ($line -match '(fi|else|then|do)\s+[a-zA-Z]') {
         Write-Host "⚠️  Line $lineNum`: Possible concatenated statement after control structure: $line" -ForegroundColor Yellow
         $issuesFound++
     }
-    
+
     # Check for concatenated terminators
     if ($line -match '(;;|esac)\s+[a-zA-Z]') {
         Write-Host "⚠️  Line $lineNum`: Possible concatenated statement after terminator: $line" -ForegroundColor Yellow
         $issuesFound++
     }
-    
+
     # Check for concatenated brackets/braces (excluding printf/echo statements)
     if ($line -match '[\}\)]\s*[a-zA-Z]' -and $line -notmatch 'printf' -and $line -notmatch 'echo') {
         Write-Host "⚠️  Line $lineNum`: Possible concatenated statement after bracket: $line" -ForegroundColor Yellow
