@@ -8,7 +8,8 @@ DriverPwmWs2814f::DriverPwmWs2814f(const QJsonObject& deviceConfig)
 	_channel = 0;
 	_whiteAlgorithm = RGBW::stringToWhiteAlgorithm("white_off");
 	_useRgbw = false;
-	_swapWB = false;
+	_swapMode = SwapMode::NONE;
+	_legacySwapWB = false;
 }
 
 DriverPwmWs2814f::~DriverPwmWs2814f()
@@ -33,7 +34,24 @@ bool DriverPwmWs2814f::init(const QJsonObject& deviceConfig)
 	{
 		// Get RGBW configuration
 		_useRgbw = deviceConfig["rgbw"].toBool(false);
-		_swapWB = deviceConfig["swapWB"].toBool(false);
+
+		// New multi-channel swap option (string) with legacy boolean fallback
+		QString swapStr = deviceConfig["swap"].toString("");
+		bool legacySwapWB = deviceConfig["swapWB"].toBool(false);
+		_legacySwapWB = legacySwapWB;
+		if (swapStr.isEmpty())
+		{
+			// Map legacy boolean to new mode if present
+			if (legacySwapWB)
+				swapStr = "wb"; // Only legacy supported W<->B
+			else
+				swapStr = "none";
+		}
+		swapStr = swapStr.toLower();
+		if (swapStr == "wb") _swapMode = SwapMode::WB;
+		else if (swapStr == "wg") _swapMode = SwapMode::WG;
+		else if (swapStr == "wr") _swapMode = SwapMode::WR;
+		else _swapMode = SwapMode::NONE;
 
 		QString whiteAlgorithm = deviceConfig["whiteAlgorithm"].toString("white_off");
 
@@ -96,7 +114,8 @@ bool DriverPwmWs2814f::init(const QJsonObject& deviceConfig)
 				Debug(_log, "WS2814f selected gpio      : %d", _ledString->channel[_channel].gpionum);
 				Debug(_log, "WS2814f total channels     : %d", RPI_PWM_CHANNELS);
 				Debug(_log, "WS2814f RGBW mode          : %s", _useRgbw ? "enabled" : "disabled");
-				Debug(_log, "WS2814f swap W & B         : %s", _swapWB ? "enabled" : "disabled");
+				const char* swapModeStr = (_swapMode == SwapMode::WB) ? "W<->B" : (_swapMode == SwapMode::WG) ? "W<->G" : (_swapMode == SwapMode::WR) ? "W<->R" : "none";
+				Debug(_log, "WS2814f swap mode          : %s%s", swapModeStr, _legacySwapWB ? " (legacy)" : "");
 				Debug(_log, "WS2814f strip type         : 0x%08X", _ledString->channel[_channel].strip_type);
 
 				if (_defaultInterval > 0)
@@ -181,10 +200,20 @@ int DriverPwmWs2814f::write(const std::vector<ColorRgb>& ledValues)
 			// Apply white algorithm for RGBW processing
 			RGBW::Rgb_to_Rgbw(color, &_temp_rgbw, _whiteAlgorithm);
 
-			// Apply W & B swap if enabled (swap White and Blue channels)
-			if (_swapWB)
+			// Apply channel swap depending on mode (White channel swapped with selected color)
+			switch (_swapMode)
 			{
+			case SwapMode::WB:
 				std::swap(_temp_rgbw.white, _temp_rgbw.blue);
+				break;
+			case SwapMode::WG:
+				std::swap(_temp_rgbw.white, _temp_rgbw.green);
+				break;
+			case SwapMode::WR:
+				std::swap(_temp_rgbw.white, _temp_rgbw.red);
+				break;
+			default:
+				break;
 			}
 
 			// Pack as BRGW (Blue-Red-Green-White) for WS2814f RGBW mode

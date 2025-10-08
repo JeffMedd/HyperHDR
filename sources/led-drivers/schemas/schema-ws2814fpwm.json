@@ -63,13 +63,14 @@
             "default": false,
             "propertyOrder": 7
         },
-        "swapWB": {
-            "type": "boolean",
-            "format": "checkbox",
-            "title": "edt_dev_spec_swapWB_title",
-            "default": false,
+        "swap": {
+            "type": "string",
+            "title": "edt_dev_spec_swap_title",
+            "enum": ["none", "wb", "wg", "wr"],
+            "default": "none",
             "propertyOrder": 8,
             "options": {
+                "enum_titles": ["edt_dev_enum_swap_none", "edt_dev_enum_swap_wb", "edt_dev_enum_swap_wg", "edt_dev_enum_swap_wr"],
                 "dependencies": {
                     "rgbw": true
                 }

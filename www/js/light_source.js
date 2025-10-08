@@ -858,11 +858,11 @@ $(document).ready(function()
 						}
 					});
 
-					// Additional specific handling for WS2814f swapWB dependency
+					// Additional evaluation for WS2814f swap select
 					if (ledType === "ws2814fpwm" || ledType === "ws2814fspi") {
-						const swapWBEditor = specificEditor.getEditor("swapWB");
-						if (swapWBEditor && swapWBEditor.evaluateDependencies) {
-							swapWBEditor.evaluateDependencies();
+						const swapEditor = specificEditor.getEditor("swap");
+						if (swapEditor && swapEditor.evaluateDependencies) {
+							swapEditor.evaluateDependencies();
 						}
 					}
 				}
@@ -873,53 +873,53 @@ $(document).ready(function()
 				const specificEditor = conf_editor.getEditor("root.specificOptions");
 				if (specificEditor) {
 					const rgbwEditor = specificEditor.getEditor("rgbw");
-					const swapWBEditor = specificEditor.getEditor("swapWB");
+					const swapEditor = specificEditor.getEditor("swap");
 					const whiteAlgorithmEditor = specificEditor.getEditor("whiteAlgorithm");
 
-					if (rgbwEditor && swapWBEditor) {
-						// Manually set up dependency watcher for swapWB
-						const setupSwapWBDependency = () => {
+					if (rgbwEditor && swapEditor) {
+						// Manually set up dependency watcher for swap select
+						const setupSwapDependency = () => {
 							const rgbwValue = rgbwEditor.getValue();
 							const shouldShow = rgbwValue === true;
 
-							// Force dependency state
-							swapWBEditor.dependenciesFulfilled = shouldShow;
+						// Force dependency state
+						swapEditor.dependenciesFulfilled = shouldShow;
 
-							// Force container visibility
-							if (swapWBEditor.container) {
-								swapWBEditor.container.style.display = shouldShow ? 'block' : 'none';
-							}
+						// Force container visibility
+						if (swapEditor.container) {
+							swapEditor.container.style.display = shouldShow ? 'block' : 'none';
+						}
 
-							// Additional DOM-level force for PWM variant
-							if (ledType === "ws2814fpwm") {
-								const swapWBElements = document.querySelectorAll('[data-schemapath*="swapWB"]');
-								swapWBElements.forEach(el => {
-									if (shouldShow) {
-										el.style.display = '';
-										el.style.visibility = 'visible';
-										el.style.opacity = '1';
-									} else {
-										el.style.display = 'none';
-									}
-								});
-							}
+						// Additional DOM-level force for PWM variant
+						if (ledType === "ws2814fpwm") {
+							const swapElements = document.querySelectorAll('[data-schemapath*="swap"]');
+							swapElements.forEach(el => {
+								if (shouldShow) {
+									el.style.display = '';
+									el.style.visibility = 'visible';
+									el.style.opacity = '1';
+								} else {
+									el.style.display = 'none';
+								}
+							});
+						}
 
-							console.log("WS2814f dependency update: RGBW=" + rgbwValue + ", SwapWB visible=" + shouldShow + " (device: " + ledType + ")");
+						console.log("WS2814f dependency update: RGBW=" + rgbwValue + ", Swap visible=" + shouldShow + " (device: " + ledType + ")");
 						};
 
 						// Set up watcher for RGBW changes
-						conf_editor.watch('root.specificOptions.rgbw', setupSwapWBDependency);
+						conf_editor.watch('root.specificOptions.rgbw', setupSwapDependency);
 
 						// Initial setup
-						setupSwapWBDependency();
+						setupSwapDependency();
 
 						// Additional force evaluation for PWM
 						if (ledType === "ws2814fpwm") {
 							setTimeout(() => {
-								setupSwapWBDependency();
+								setupSwapDependency();
 								// Force re-evaluation of dependencies
-								if (swapWBEditor.evaluateDependencies) {
-									swapWBEditor.evaluateDependencies();
+								if (swapEditor.evaluateDependencies) {
+									swapEditor.evaluateDependencies();
 								}
 							}, 500);
 						}
@@ -950,23 +950,23 @@ $(document).ready(function()
 				}
 			}, 500); // Longer delay to ensure all editors are fully initialized
 
-			// Manual SwapWB creation for WS2814f PWM - handles JSON Editor dependency filtering bug
+			// Manual Swap select creation for WS2814f PWM - handles JSON Editor dependency filtering bug
 			if (ledType === "ws2814fpwm") {
 				setTimeout(() => {
 					const specificEditor = conf_editor.getEditor("root.specificOptions");
-					const swapWBEditor = specificEditor ? specificEditor.getEditor("swapWB") : null;
+					const swapEditor = specificEditor ? specificEditor.getEditor("swap") : null;
 
-					// If JSON Editor failed to create swapWB field, create it manually
-					if (!swapWBEditor) {
-						console.log("WS2814f PWM: swapWB field missing from JSON Editor, creating manually...");
-						manuallyCreateSwapWB(specificEditor);
+					// If JSON Editor failed to create swap field, create it manually
+					if (!swapEditor) {
+						console.log("WS2814f PWM: swap field missing from JSON Editor, creating manually...");
+						manuallyCreateSwapSelect(specificEditor);
 					}
 				}, 1000);
 			}
 		}
-				// Manual SwapWB creation function - bypasses JSON Editor limitations
-			function manuallyCreateSwapWB(specificEditor) {
-				console.log("🔧 Creating SwapWB field manually for PWM variant");
+                // Manual Swap select creation function - bypasses JSON Editor limitations & legacy checkbox
+			function manuallyCreateSwapSelect(specificEditor) {
+				console.log("🔧 Creating Swap select field manually for PWM variant");
 
 				// 1) Locate RGBW field (anchor) and its row/container
 				const rgbwContainer = document.querySelector("[data-schemapath*='rgbw']");
@@ -982,54 +982,60 @@ $(document).ready(function()
 				}
 
 				// 2) Build row using the same layout as other fields (Bootstrap row with label/input cols)
-				const swapWBRow = document.createElement('div');
-				swapWBRow.className = 'row';
-				swapWBRow.setAttribute('data-schemapath', 'root.specificOptions.swapWB');
+				const swapRow = document.createElement('div');
+				swapRow.className = 'row';
+				swapRow.setAttribute('data-schemapath', 'root.specificOptions.swap');
 
 				const labelCol = document.createElement('div');
 				labelCol.className = 'col-sm-3 control-label';
 				const label = document.createElement('label');
-				label.textContent = $.i18n ? $.i18n('edt_dev_spec_swapWB_title') : 'Swap W & B';
+				label.textContent = $.i18n ? $.i18n('edt_dev_spec_swap_title') : 'Swap Channels';
 				labelCol.appendChild(label);
 
 				const inputCol = document.createElement('div');
 				inputCol.className = 'col-sm-9';
-				const checkboxWrapper = document.createElement('div');
-				checkboxWrapper.className = 'checkbox';
-				const innerLabel = document.createElement('label');
-				const checkbox = document.createElement('input');
-				checkbox.type = 'checkbox';
-				checkbox.name = 'root[specificOptions][swapWB]';
-				checkbox.value = '1';
-				checkbox.setAttribute('data-schemapath', 'root.specificOptions.swapWB');
-				innerLabel.appendChild(checkbox);
-				checkboxWrapper.appendChild(innerLabel);
-				inputCol.appendChild(checkboxWrapper);
+				const select = document.createElement('select');
+				select.className = 'form-control';
+				select.name = 'root[specificOptions][swap]';
+				select.setAttribute('data-schemapath', 'root.specificOptions.swap');
+				const swapOptions = [
+					{ value: 'none', label: $.i18n ? $.i18n('edt_dev_enum_swap_none') : 'None' },
+					{ value: 'wb', label: $.i18n ? $.i18n('edt_dev_enum_swap_wb') : 'Swap W & B' },
+					{ value: 'wg', label: $.i18n ? $.i18n('edt_dev_enum_swap_wg') : 'Swap W & G' },
+					{ value: 'wr', label: $.i18n ? $.i18n('edt_dev_enum_swap_wr') : 'Swap W & R' }
+				];
+				swapOptions.forEach(o => {
+					const opt = document.createElement('option');
+					opt.value = o.value;
+					opt.textContent = o.label;
+					select.appendChild(opt);
+				});
+				inputCol.appendChild(select);
 
-				swapWBRow.appendChild(labelCol);
-				swapWBRow.appendChild(inputCol);
+				swapRow.appendChild(labelCol);
+				swapRow.appendChild(inputCol);
 
 				// 3) Insert the row right after RGBW or before White Algorithm if present
 				const whiteAlgContainer = document.querySelector("[data-schemapath*='whiteAlgorithm']");
 				const whiteAlgRow = whiteAlgContainer ? (whiteAlgContainer.closest('.row') || whiteAlgContainer.closest('.form-group')) : null;
 				if (whiteAlgRow && whiteAlgRow.parentElement === formContainer) {
-					formContainer.insertBefore(swapWBRow, whiteAlgRow);
-					console.log("✅ SwapWB inserted between RGBW and White Algorithm");
+					formContainer.insertBefore(swapRow, whiteAlgRow);
+					console.log("✅ Swap select inserted between RGBW and White Algorithm");
 				} else if (rgbwRow && rgbwRow.parentElement === formContainer) {
 					const next = rgbwRow.nextSibling;
-					next ? formContainer.insertBefore(swapWBRow, next) : formContainer.appendChild(swapWBRow);
-					console.log("✅ SwapWB inserted after RGBW");
+					next ? formContainer.insertBefore(swapRow, next) : formContainer.appendChild(swapRow);
+					console.log("✅ Swap select inserted after RGBW");
 				} else {
-					formContainer.appendChild(swapWBRow);
-					console.warn("⚠️ Fallback: SwapWB appended at end of container");
+					formContainer.appendChild(swapRow);
+					console.warn("⚠️ Fallback: Swap select appended at end of container");
 				}
 
 				// 4) Visibility dependency on RGBW
 				const rgbwCheckbox = rgbwContainer.querySelector("input[type='checkbox']");
 				const updateVisibility = () => {
 					const visible = !!(rgbwCheckbox && rgbwCheckbox.checked);
-					swapWBRow.style.display = visible ? '' : 'none';
-					console.log(`SwapWB visibility: ${visible ? 'visible' : 'hidden'}`);
+					swapRow.style.display = visible ? '' : 'none';
+					console.log(`Swap select visibility: ${visible ? 'visible' : 'hidden'}`);
 				};
 				rgbwCheckbox && rgbwCheckbox.addEventListener('change', updateVisibility);
 				updateVisibility();
@@ -1037,9 +1043,13 @@ $(document).ready(function()
 				// 5) Initialize from current config (if present)
 				try {
 					const cfg = conf_editor && conf_editor.getValue ? conf_editor.getValue() : null;
-					const initial = cfg && cfg.specificOptions && typeof cfg.specificOptions.swapWB !== 'undefined' ? !!cfg.specificOptions.swapWB : false;
-					checkbox.checked = initial;
-					console.log("SwapWB initial value:", initial);
+					let initial = 'none';
+					if (cfg && cfg.specificOptions) {
+						if (cfg.specificOptions.swap) initial = cfg.specificOptions.swap;
+						else if (cfg.specificOptions.swapWB === true) initial = 'wb'; // legacy mapping
+					}
+					select.value = initial;
+					console.log("Swap initial value:", initial);
 				} catch (e) {
 					console.warn("SwapWB init from config failed:", e);
 				}
@@ -1049,12 +1059,14 @@ $(document).ready(function()
 					try {
 						const cfg = conf_editor.getValue();
 						if (!cfg.specificOptions) cfg.specificOptions = {};
-						cfg.specificOptions.swapWB = !!checkbox.checked;
+						cfg.specificOptions.swap = select.value || 'none';
+						// legacy support if someone still uses swapWB only
+						if (!cfg.specificOptions.swap && cfg.specificOptions.swapWB === true) cfg.specificOptions.swap = 'wb';
 						conf_editor.setValue(cfg);
 						conf_editor.trigger && conf_editor.trigger('change');
-						console.log("✅ swapWB injected into config:", cfg.specificOptions.swapWB);
+						console.log("✅ swap injected into config:", cfg.specificOptions.swap);
 					} catch (e) {
-						console.warn("Failed to inject swapWB into config:", e);
+						console.warn("Failed to inject swap into config:", e);
 					}
 				};
 
@@ -1063,11 +1075,11 @@ $(document).ready(function()
 				saveBtn && saveBtn.addEventListener('click', ensureInConfig, { once: false });
 
 				// Also update validation on direct change
-				checkbox.addEventListener('change', () => {
+				select.addEventListener('change', () => {
 					if (conf_editor && conf_editor.validate) conf_editor.validate();
 				});
 
-				console.log("🎉 SwapWB field manually created and wired to config!");
+				console.log("🎉 Swap select field manually created and wired to config!");
 				return true;
 			}
 

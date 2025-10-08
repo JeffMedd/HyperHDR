@@ -48,5 +48,7 @@ private:
 	RGBW::WhiteAlgorithm _whiteAlgorithm;
 	ColorRgbw _temp_rgbw;
 	bool _useRgbw;
-	bool _swapWB;
+	enum class SwapMode { NONE, WB, WG, WR };
+	SwapMode _swapMode;
+	bool _legacySwapWB;
 };
