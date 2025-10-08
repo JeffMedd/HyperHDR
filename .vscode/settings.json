@@ -1,4 +1,17 @@
 {
     "chat.tools.autoApprove": true,
-    "chat.agent.maxRequests": 250
+    "chat.agent.maxRequests": 250,
+    "files.associations": {
+        "exception": "cpp",
+        "functional": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "memory": "cpp",
+        "sstream": "cpp",
+        "tuple": "cpp",
+        "unordered_map": "cpp",
+        "utility": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp"
+    }
 }
